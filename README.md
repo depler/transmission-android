@@ -3,7 +3,7 @@
 This project is based on Windows version: https://github.com/depler/transmission-vs. Some code components may slightly differ.
 
 # Build
-Clone current repository and build **TransmissionAndroid.sln** file with Visual Studio 2022 or newer. No, additional black magic is not required. Yes, just that simple.
+Clone current repository and build **TransmissionAndroid.sln** file with Visual Studio 2022 or newer. No, additional black magic is not required. Yes, just that simple. All components, such as third-party modules and SSL library, are included as raw source code files.
 
 # Config
 Application uses path `/storage/emulated/0/Android/data/com.depler.transmission/files` as main folder. It contains subfolders `config` (application settings and service data) and `web` (web UI files, not included in package). Some settings will be calculated in rutime at first launch. Probably you want/should change following settings in file `[app_folder]/config/settings.json`: `download-dir`, `incomplete-dir`. 
