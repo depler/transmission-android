@@ -558,8 +558,6 @@ void tr_session::initImpl(init_data& data)
 
     this->blocklists_ = libtransmission::Blocklist::loadBlocklists(blocklist_dir_, useBlocklist());
 
-    tr_announcerInit(this);
-
     tr_logAddInfo(fmt::format(_("Transmission version {version} starting"), fmt::arg("version", LONG_VERSION_STRING)));
 
     setSettings(client_settings, true);
@@ -593,7 +591,7 @@ void tr_session::setSettings(tr_variant* settings_dict, bool force)
     rpc_server_->load(settings_dict);
 }
 
-void tr_session::setSettings(tr_session_settings settings_in, bool force)
+void tr_session::setSettings(tr_session_settings&& settings_in, bool force)
 {
     auto const lock = unique_lock();
 
@@ -1248,7 +1246,7 @@ void tr_session::closeImplPart1(std::promise<void>* closed_promise)
     // remaining `event=stopped` announce messages are queued in
     // the announcer. The announcer's destructor sends all those
     // out via `web_`...
-    tr_announcerClose(this);
+    this->announcer_.reset();
     // ...and now that those are queued, tell web_ that we're
     // shutting down soon. This leaves the `event=stopped` messages
     // in the queue but refuses to take any _new_ tasks
@@ -1317,10 +1315,8 @@ static void sessionLoadTorrents(tr_session* session, tr_ctor* ctor, std::promise
                 continue;
             }
 
-            auto const path = tr_pathbuf{ dirname, '/', name };
-
             // is a magnet link?
-            if (!tr_ctorSetMetainfoFromFile(ctor, path.sv(), nullptr))
+            if (auto const path = tr_pathbuf{ dirname, '/', name }; !tr_ctorSetMetainfoFromFile(ctor, path.sv(), nullptr))
             {
                 if (auto buf = std::vector<char>{}; tr_loadFile(path, buf))
                 {
@@ -1328,7 +1324,7 @@ static void sessionLoadTorrents(tr_session* session, tr_ctor* ctor, std::promise
                 }
             }
 
-            if (tr_torrent* const tor = tr_torrentNew(ctor, nullptr); tor != nullptr)
+            if (tr_torrentNew(ctor, nullptr) != nullptr)
             {
                 ++n_torrents;
             }
@@ -1505,7 +1501,7 @@ void tr_session::setDefaultTrackers(std::string_view trackers)
         {
             if (tor->isPublic())
             {
-                tr_announcerResetTorrent(announcer, tor);
+                announcer_->resetTorrent(tor);
             }
         }
     }

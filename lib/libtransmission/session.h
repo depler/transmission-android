@@ -58,7 +58,6 @@ class tr_rpc_server;
 class tr_session_thread;
 class tr_web;
 struct struct_utp_context;
-struct tr_announcer;
 struct tr_variant;
 
 namespace libtransmission
@@ -323,7 +322,7 @@ public:
         return *timer_maker_;
     }
 
-    [[nodiscard]] auto amInSessionThread() noexcept
+    [[nodiscard]] auto amInSessionThread() const noexcept
     {
         return session_thread_->amInSessionThread();
     }
@@ -870,7 +869,7 @@ public:
         }
     }
 
-    void fetch(tr_web::FetchOptions options) const
+    void fetch(tr_web::FetchOptions&& options) const
     {
         web_->fetch(std::move(options));
     }
@@ -930,7 +929,7 @@ private:
     struct init_data;
     void initImpl(init_data&);
     void setSettings(tr_variant* settings_dict, bool force);
-    void setSettings(tr_session_settings settings, bool force);
+    void setSettings(tr_session_settings&& settings, bool force);
 
     void closeImplPart1(std::promise<void>* closed_promise);
     void closeImplPart2(std::promise<void>* closed_promise);
@@ -1151,7 +1150,7 @@ public:
     std::unique_ptr<tr_announcer_udp> announcer_udp_ = tr_announcer_udp::create(announcer_udp_mediator_);
 
     // depends-on: settings_, torrents_, web_, announcer_udp_
-    struct tr_announcer* announcer = nullptr;
+    std::unique_ptr<tr_announcer> announcer_ = tr_announcer::create(this, *announcer_udp_);
 
     // depends-on: public_peer_port_, udp_core_, dht_mediator_
     std::unique_ptr<tr_dht> dht_;
