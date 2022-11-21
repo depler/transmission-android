@@ -1,0 +1,6 @@
+libtransmission.so
+--config-dir
+CONFIG_FOLDER_PATH
+--log-level=info
+--logfile
+LOG_FILE_PATH

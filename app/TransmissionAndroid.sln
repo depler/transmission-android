@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransmissionAndroid", "TransmissionAndroid.csproj", "{A0BCE607-F35D-49B2-9249-F418BAA14EAC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtransmission", "..\lib\libtransmission.vcxproj", "{EA8CA5B8-7658-491F-970F-61DF8F5582F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A0BCE607-F35D-49B2-9249-F418BAA14EAC}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{A0BCE607-F35D-49B2-9249-F418BAA14EAC}.Debug|ARM.Build.0 = Debug|Any CPU
+		{A0BCE607-F35D-49B2-9249-F418BAA14EAC}.Debug|ARM.Deploy.0 = Debug|Any CPU
+		{A0BCE607-F35D-49B2-9249-F418BAA14EAC}.Release|ARM.ActiveCfg = Release|Any CPU
+		{A0BCE607-F35D-49B2-9249-F418BAA14EAC}.Release|ARM.Build.0 = Release|Any CPU
+		{A0BCE607-F35D-49B2-9249-F418BAA14EAC}.Release|ARM.Deploy.0 = Release|Any CPU
+		{EA8CA5B8-7658-491F-970F-61DF8F5582F6}.Debug|ARM.ActiveCfg = Debug|ARM
+		{EA8CA5B8-7658-491F-970F-61DF8F5582F6}.Debug|ARM.Build.0 = Debug|ARM
+		{EA8CA5B8-7658-491F-970F-61DF8F5582F6}.Release|ARM.ActiveCfg = Release|ARM
+		{EA8CA5B8-7658-491F-970F-61DF8F5582F6}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E808363-36D8-460F-A48E-87B253AB3067}
+	EndGlobalSection
+EndGlobal
