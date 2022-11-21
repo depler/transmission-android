@@ -9,7 +9,7 @@ Clone current repository and build **TransmissionAndroid.sln** file with Visual 
 - latest Transmission source code (currently v4.00 beta)
 - full control over transmission start arguments
 - full control over `settings.json` file and other data
-- ability to use custom web UI
+- ability to use custom Web UI
 - autostart on device boot
 
 # Config
