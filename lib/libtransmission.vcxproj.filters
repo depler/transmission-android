@@ -1007,9 +1007,6 @@
     <ClCompile Include="libdeflate\lib\arm\cpu_features.c">
       <Filter>libdeflate\arm</Filter>
     </ClCompile>
-    <ClCompile Include="libdeflate\lib\x86\cpu_features.c">
-      <Filter>libdeflate\x86</Filter>
-    </ClCompile>
     <ClCompile Include="wolfssl_src\src\dtls.c">
       <Filter>wolfssl</Filter>
     </ClCompile>
@@ -1077,9 +1074,6 @@
     </Filter>
     <Filter Include="daemon">
       <UniqueIdentifier>{9b8580c8-628e-4227-9d1e-d240220ce6af}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libdeflate\x86">
-      <UniqueIdentifier>{fff57662-fdf8-4088-a466-52eac119ddbd}</UniqueIdentifier>
     </Filter>
     <Filter Include="libdeflate\arm">
       <UniqueIdentifier>{306f11e9-6f25-4229-9826-5caa97b7e94d}</UniqueIdentifier>
@@ -2234,21 +2228,6 @@
     </ClInclude>
     <ClInclude Include="libdeflate\lib\arm\crc32_impl.h">
       <Filter>libdeflate\arm</Filter>
-    </ClInclude>
-    <ClInclude Include="libdeflate\lib\x86\decompress_impl.h">
-      <Filter>libdeflate\x86</Filter>
-    </ClInclude>
-    <ClInclude Include="libdeflate\lib\x86\crc32_impl.h">
-      <Filter>libdeflate\x86</Filter>
-    </ClInclude>
-    <ClInclude Include="libdeflate\lib\x86\matchfinder_impl.h">
-      <Filter>libdeflate\x86</Filter>
-    </ClInclude>
-    <ClInclude Include="libdeflate\lib\x86\cpu_features.h">
-      <Filter>libdeflate\x86</Filter>
-    </ClInclude>
-    <ClInclude Include="libdeflate\lib\x86\crc32_pclmul_template.h">
-      <Filter>libdeflate\x86</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
