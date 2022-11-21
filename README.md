@@ -11,6 +11,7 @@ Clone current repository and build **TransmissionAndroid.sln** file with Visual 
 - full control over `settings.json` file and other data
 - ability to use custom Web UI
 - autostart on device boot
+- root is not required
 
 # Config
 Application uses path `/storage/emulated/0/Android/data/com.depler.transmission/files` as main folder. It contains subfolders `config` (application settings and service data) and `web` (web UI files). Some settings will be calculated in rutime at first launch. Probably you want/should change following settings in file `[app_folder]/config/settings.json`: `download-dir`, `incomplete-dir`. 
