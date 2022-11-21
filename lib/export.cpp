@@ -4,13 +4,13 @@
 
 #define EXPORT_METHOD extern "C" __attribute__((visibility("default")))
 
-#define TR_STATUS_EMPTY -1000
 #define TR_STATUS_ERROR_SPAWN -2
 #define TR_STATUS_ERROR_INIT -1
-#define TR_STATUS_STARTED 0
-#define TR_STATUS_RUNNING 1
+#define TR_STATUS_NONE -1000
+#define TR_STATUS_STARTED 1
+#define TR_STATUS_RUNNING 2
 
-int tr_status = TR_STATUS_EMPTY;
+int tr_status = TR_STATUS_NONE;
 std::mutex tr_mutex;
 std::string tr_web_folder;
 std::string tr_session_folder;
@@ -31,7 +31,7 @@ EXPORT_METHOD int StartTransmission(int argc, char** argv, char* web_folder, cha
 
     std::lock_guard lock(tr_mutex);
 
-    if (tr_status != TR_STATUS_EMPTY)
+    if (tr_status != TR_STATUS_NONE)
         return tr_status;
 
     tr_web_folder = web_folder;
