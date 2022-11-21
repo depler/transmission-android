@@ -139,9 +139,9 @@
 /* Define to 1 if you have the `pipe2' function. */
 /* #undef EVENT__HAVE_PIPE2 */
 /* Define to 1 if you have the `poll' function. */
-#define EVENT__HAVE_POLL 1
+//#define EVENT__HAVE_POLL 1
 /* Define to 1 if you have the <poll.h> header file. */
-#define EVENT__HAVE_POLL_H 1
+//#define EVENT__HAVE_POLL_H 1
 /* Define to 1 if you have the `port_create' function. */
 /* #undef EVENT__HAVE_PORT_CREATE */
 /* Define to 1 if you have the <port.h> header file. */
@@ -155,7 +155,7 @@
 /* Define to 1 if the system has the type `sa_family_t'. */
 #define EVENT__HAVE_SA_FAMILY_T 1
 /* Define to 1 if you have the `select' function. */
-#define EVENT__HAVE_SELECT 1
+//#define EVENT__HAVE_SELECT 1
 /* Define to 1 if you have the `sendfile' function. */
 #define EVENT__HAVE_SENDFILE 1
 /* Define to 1 if you have the `setenv' function. */

@@ -692,9 +692,6 @@
     <ClCompile Include="event2\bufferevent_filter.c">
       <Filter>event2</Filter>
     </ClCompile>
-    <ClCompile Include="event2\bufferevent_openssl.c">
-      <Filter>event2</Filter>
-    </ClCompile>
     <ClCompile Include="event2\bufferevent_pair.c">
       <Filter>event2</Filter>
     </ClCompile>
@@ -702,9 +699,6 @@
       <Filter>event2</Filter>
     </ClCompile>
     <ClCompile Include="event2\bufferevent_sock.c">
-      <Filter>event2</Filter>
-    </ClCompile>
-    <ClCompile Include="event2\devpoll.c">
       <Filter>event2</Filter>
     </ClCompile>
     <ClCompile Include="event2\evdns.c">
@@ -717,9 +711,6 @@
       <Filter>event2</Filter>
     </ClCompile>
     <ClCompile Include="event2\evmap.c">
-      <Filter>event2</Filter>
-    </ClCompile>
-    <ClCompile Include="event2\evport.c">
       <Filter>event2</Filter>
     </ClCompile>
     <ClCompile Include="event2\evrpc.c">
@@ -740,19 +731,10 @@
     <ClCompile Include="event2\http.c">
       <Filter>event2</Filter>
     </ClCompile>
-    <ClCompile Include="event2\kqueue.c">
-      <Filter>event2</Filter>
-    </ClCompile>
     <ClCompile Include="event2\listener.c">
       <Filter>event2</Filter>
     </ClCompile>
     <ClCompile Include="event2\log_event2.c">
-      <Filter>event2</Filter>
-    </ClCompile>
-    <ClCompile Include="event2\poll.c">
-      <Filter>event2</Filter>
-    </ClCompile>
-    <ClCompile Include="event2\select.c">
       <Filter>event2</Filter>
     </ClCompile>
     <ClCompile Include="event2\signal.c">

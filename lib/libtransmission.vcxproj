@@ -241,31 +241,22 @@
     <ClCompile Include="event2\buffer.c" />
     <ClCompile Include="event2\bufferevent.c" />
     <ClCompile Include="event2\bufferevent_filter.c" />
-    <ClCompile Include="event2\bufferevent_openssl.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="event2\bufferevent_pair.c" />
     <ClCompile Include="event2\bufferevent_ratelim.c" />
     <ClCompile Include="event2\bufferevent_sock.c" />
-    <ClCompile Include="event2\devpoll.c" />
     <ClCompile Include="event2\epoll.c" />
     <ClCompile Include="event2\evdns.c" />
     <ClCompile Include="event2\event.c" />
     <ClCompile Include="event2\event_tagging.c" />
     <ClCompile Include="event2\evmap.c" />
-    <ClCompile Include="event2\evport.c" />
     <ClCompile Include="event2\evrpc.c" />
     <ClCompile Include="event2\evthread.c" />
     <ClCompile Include="event2\evutil.c" />
     <ClCompile Include="event2\evutil_rand.c" />
     <ClCompile Include="event2\evutil_time.c" />
     <ClCompile Include="event2\http.c" />
-    <ClCompile Include="event2\kqueue.c" />
     <ClCompile Include="event2\listener.c" />
     <ClCompile Include="event2\log_event2.c" />
-    <ClCompile Include="event2\poll.c" />
-    <ClCompile Include="event2\select.c" />
     <ClCompile Include="event2\signal.c" />
     <ClCompile Include="event2\strlcpy.c" />
     <ClCompile Include="fmt\format.cc" />
