@@ -17,8 +17,7 @@ namespace TransmissionAndroid.Code
                 {
                     case "exit":
                         {
-                            context.StopService<TransmissionService>();
-                            Native.AbortProcess();
+                            System.Diagnostics.Process.GetCurrentProcess().Kill();
                             break;
                         }
                 }

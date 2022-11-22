@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 using Android.App;
 using Android.Content;
@@ -11,6 +12,9 @@ namespace TransmissionAndroid.Code
     [Service]
     public class TransmissionService : Service
     {
+        public static IntPtr daemonPtr = IntPtr.Zero;
+        public static Thread daemonThread = null;
+
         public override IBinder OnBind(Intent intent)
         {
             return null;
@@ -20,13 +24,16 @@ namespace TransmissionAndroid.Code
         {
             try
             {
-                if (Native.GetTransmissionStatus() < TransmissionStatus.STARTED)
+                if (daemonPtr == IntPtr.Zero)
                 {
                     var config = ConfigureTransmission();
-                    var status = Native.StartTransmission(config);
 
-                    if (status < TransmissionStatus.STARTED)
-                        throw new Exception($"Transmission failed to start");
+                    daemonPtr = Native.InitDaemon(config);
+                    if (daemonPtr == IntPtr.Zero)
+                        throw new Exception($"Transmission failed to initialize");
+
+                    daemonThread = new Thread(() => Native.StartDaemon(daemonPtr, true));
+                    daemonThread.Start();
 
                     SetNotification("Transmission is running", string.Join('\n', config.Args));
                     this.ShowTextLong($"Transmission started");
@@ -41,7 +48,6 @@ namespace TransmissionAndroid.Code
             catch (Exception ex)
             {
                 this.ShowTextLong(ex.Message);
-                Native.AbortProcess();
                 throw;
             }
         }

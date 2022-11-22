@@ -4,57 +4,37 @@
 
 #define EXPORT_METHOD extern "C" __attribute__((visibility("default")))
 
-#define TR_STATUS_ERROR_SPAWN -2
-#define TR_STATUS_ERROR_INIT -1
-#define TR_STATUS_NONE -1000
-#define TR_STATUS_STARTED 1
-#define TR_STATUS_RUNNING 2
-
-int tr_status = TR_STATUS_NONE;
-std::mutex tr_mutex;
 std::string tr_web_folder;
 std::string tr_session_folder;
 
-EXPORT_METHOD void AbortProcess()
+EXPORT_METHOD tr_daemon* InitDaemon(int argc, char** argv, char* web_folder, char* session_folder)
 {
-    abort();
-}
-
-EXPORT_METHOD int GetTransmissionStatus()
-{
-    std::lock_guard lock(tr_mutex);
-    return tr_status;
-}
-
-EXPORT_METHOD int StartTransmission(int argc, char** argv, char* web_folder, char* session_folder)
-{
-
-    std::lock_guard lock(tr_mutex);
-
-    if (tr_status != TR_STATUS_NONE)
-        return tr_status;
-
     tr_web_folder = web_folder;
     tr_session_folder = session_folder;
 
     int ret = 0;
     bool foreground = false;
-    tr_error* error = nullptr;
-    tr_daemon daemon;
+    auto daemon = new tr_daemon();
 
-    if (!daemon.init(argc, argv, &foreground, &ret))
+    if (!daemon->init(argc, argv, &foreground, &ret))
     {
-        tr_status = TR_STATUS_ERROR_INIT;
-        return tr_status;
-    }
- 
-    if (!daemon.spawn(foreground, &ret, &error))
-    {
-        tr_status = TR_STATUS_ERROR_SPAWN;
-        return tr_status;
+        delete daemon;
+        daemon = nullptr;
     }
 
-    tr_status = TR_STATUS_RUNNING;
-    return TR_STATUS_STARTED;
+    return daemon;
 }
 
+EXPORT_METHOD bool StartDaemon(tr_daemon* daemon, bool foreground)
+{
+    int ret = 0;
+    tr_error* error = nullptr;
+
+    if (!daemon->spawn(foreground, &ret, &error))
+    {
+        tr_error_free(error);
+        return false;
+    }
+
+    return true;
+}

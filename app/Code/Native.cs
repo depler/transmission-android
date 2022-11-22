@@ -8,21 +8,18 @@ namespace TransmissionAndroid.Code
         public const string libtransmission = "libtransmission.so";
 
         [DllImport(libtransmission)]
-        public static extern void AbortProcess();
+        private static extern IntPtr InitDaemon(int argc, IntPtr argv, IntPtr web_folder, IntPtr session_folder);
 
         [DllImport(libtransmission)]
-        public static extern TransmissionStatus GetTransmissionStatus();
+        public static extern bool StartDaemon(IntPtr daemon, bool foreground);
 
-        [DllImport(libtransmission)]
-        private static extern TransmissionStatus StartTransmission(int argc, IntPtr argv, IntPtr web_folder, IntPtr session_folder);
-
-        public static TransmissionStatus StartTransmission(TransmissionConfig config)
+        public static IntPtr InitDaemon(TransmissionConfig config)
         {
             using var nativeArgs = new NativeArray(config.Args);
             using var nativeWebFolder = new NativeString(config.WebFolder);
             using var nativeSessionFolder = new NativeString(config.SessionFolder);
 
-            return StartTransmission(
+            return InitDaemon(
                 nativeArgs.Length, 
                 nativeArgs.Pointer,
                 nativeWebFolder.Pointer,
