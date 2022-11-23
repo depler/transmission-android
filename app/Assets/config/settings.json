@@ -25,7 +25,7 @@
     "incomplete-dir": "TORRENT_FOLDER_PATH",
     "incomplete-dir-enabled": false,
     "lpd-enabled": false,
-    "message-level": "info",
+    "message-level": "error",
     "peer-congestion-algorithm": "",
     "peer-id-ttl-hours": 6,
     "peer-limit-global": 200,
