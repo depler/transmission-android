@@ -11,6 +11,7 @@ Clone current repository and build **TransmissionAndroid.sln** file with Visual 
 - full control over `settings.json` file and other data
 - ability to use custom Web UI
 - autostart on device boot
+- compatible with Android 5.0 or newer versions
 - root is not required
 
 # Config
