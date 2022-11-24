@@ -13,7 +13,7 @@
     "bind-address-ipv6": "::",
     "blocklist-enabled": false,
     "blocklist-url": "http://www.example.com/blocklist",
-    "cache-size-mb": 16,
+    "cache-size-mb": 32,
     "default-trackers": "",
     "dht-enabled": true,
     "download-dir": "TORRENT_FOLDER_PATH",
@@ -72,7 +72,7 @@
     "start-added-torrents": true,
     "tcp-enabled": false,
     "trash-original-torrent-files": false,
-    "umask": "022",
+    "umask": "000",
     "upload-slots-per-torrent": 8,
     "utp-enabled": true
 }

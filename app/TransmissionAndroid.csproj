@@ -77,13 +77,14 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\ActionReceiver.cs" />
+    <Compile Include="Code\NotificationActionReceiver.cs" />
     <Compile Include="Code\BootReceiver.cs" />
     <Compile Include="Code\ContextExtensions.cs" />
     <Compile Include="Code\MainActivity.cs" />
     <Compile Include="Code\Native.cs" />
     <Compile Include="Code\NativeString.cs" />
     <Compile Include="Code\NativeArray.cs" />
+    <Compile Include="Code\NotificationAction.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Code\TransmissionConfig.cs" />

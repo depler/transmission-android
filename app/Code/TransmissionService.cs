@@ -3,6 +3,7 @@ using System.Threading;
 
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 
 using AndroidX.Core.App;
@@ -78,10 +79,12 @@ namespace TransmissionAndroid.Code
         {
             var notificationChannel = this.CreateNotificationChannel();
 
-            using var contentBigText = new NotificationCompat.BigTextStyle().BigText(text);
-            using var actionExit = this.CreateNotificationAction<ActionReceiver>("Exit");
+            var contentBigText = new NotificationCompat.BigTextStyle().BigText(text);
 
-            using var notification = new NotificationCompat.Builder(this, notificationChannel)
+            var actionExit = NotificationActionReceiver.CreateAction(this, NotificationAction.Exit, Color.DarkRed);
+            var actionConfig = NotificationActionReceiver.CreateAction(this, NotificationAction.Update, Color.DarkBlue);
+
+            var notification = new NotificationCompat.Builder(this, notificationChannel)
                 .SetContentTitle(title)
                 .SetContentText(text)
                 .SetStyle(contentBigText)
@@ -90,6 +93,7 @@ namespace TransmissionAndroid.Code
                 .SetOngoing(true)
                 .SetShowWhen(false)
                 .AddAction(actionExit)
+                .AddAction(actionConfig)
                 .Build();
 
             StartForeground(1, notification);

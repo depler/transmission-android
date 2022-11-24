@@ -13,7 +13,7 @@ namespace TransmissionAndroid.Code
         private readonly string _externalFilesFolder;
         private readonly string _externalStorageFolder;
 
-        public ExternalFilesManager(ContextWrapper context)
+        public ExternalFilesManager(Context context)
         {
             _assetManager = context.Assets;
             _externalFilesFolder = context.GetExternalFilesDir(null).AbsolutePath;
