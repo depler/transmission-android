@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -24,32 +25,32 @@ namespace TransmissionAndroid.Code
 
         public string CombinePath(string relativePath)
         {
-            return System.IO.Path.Combine(_externalFilesFolder.Value, relativePath);
+            return Path.Combine(_externalFilesFolder.Value, relativePath);
         }
 
         public string CombinePath(string relativePath1, string relativePath2)
         {
-            return System.IO.Path.Combine(_externalFilesFolder.Value, relativePath1, relativePath2);
+            return Path.Combine(_externalFilesFolder.Value, relativePath1, relativePath2);
         }
 
         public bool TryCreateFolder(string relativePath)
         {
             var path = CombinePath(relativePath);
-            if (System.IO.Directory.Exists(path))
+            if (Directory.Exists(path))
                 return false;
 
-            System.IO.Directory.CreateDirectory(path);
+            Directory.CreateDirectory(path);
             return true;
         }
 
         public bool TryClearFolder(string relativePath)
         {
             var path = CombinePath(relativePath);
-            if (!System.IO.Directory.Exists(path))
+            if (!Directory.Exists(path))
                 return false;
 
-            foreach (var file in System.IO.Directory.GetFiles(path))
-                System.IO.File.Delete(file);
+            foreach (var file in Directory.GetFiles(path))
+                File.Delete(file);
 
             return true;
         }
@@ -57,7 +58,7 @@ namespace TransmissionAndroid.Code
         public string[] ReadFileLines(string relativePath)
         {
             var path = CombinePath(relativePath);
-            return System.IO.File.ReadAllLines(path, _utf8);
+            return File.ReadAllLines(path, _utf8);
         }
 
         public void WriteFile(string assetPath)
@@ -65,23 +66,23 @@ namespace TransmissionAndroid.Code
             var destinationPath = CombinePath(assetPath);
 
             using var assetStream = _assetManager.Open(assetPath);
-            using var fileStream = System.IO.File.OpenWrite(destinationPath);
+            using var fileStream = File.OpenWrite(destinationPath);
 
             assetStream.CopyTo(fileStream);
         }
 
         public void WriteConfigFile(string assetPath)
         {
-            var torrentsFolder = System.IO.Path.Combine(_externalStorageFolder.Value, "Torrents");
+            var torrentsFolder = Path.Combine(_externalStorageFolder.Value, "Torrents");
             var content = ReadAssetString(assetPath).Replace("TORRENT_FOLDER_PATH", torrentsFolder);
 
             var destinationPath = CombinePath(assetPath);
-            System.IO.File.WriteAllText(destinationPath, content, _utf8);
+            File.WriteAllText(destinationPath, content, _utf8);
         }
 
         public void WriteArgsFile(string assetPath)
         {
-            var configRelativePath = System.IO.Path.GetDirectoryName(assetPath);
+            var configRelativePath = Path.GetDirectoryName(assetPath);
             var configFolder = CombinePath(configRelativePath);
             var logFile = CombinePath(configRelativePath, "log.txt");
 
@@ -90,13 +91,13 @@ namespace TransmissionAndroid.Code
                 .Replace("LOG_FILE_PATH", logFile);
 
             var destinationPath = CombinePath(assetPath);
-            System.IO.File.WriteAllText(destinationPath, content, _utf8);
+            File.WriteAllText(destinationPath, content, _utf8);
         }
 
         private string ReadAssetString(string assetPath)
         {
             using var stream = _assetManager.Open(assetPath);
-            using var reader = new System.IO.StreamReader(stream, _utf8);
+            using var reader = new StreamReader(stream, _utf8);
             return reader.ReadToEnd();
         }
     }
