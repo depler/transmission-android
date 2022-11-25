@@ -21,12 +21,15 @@ namespace TransmissionAndroid.Code
         {
             try
             {
-                var id = intent.GetStringExtra(NotificationAction.ExtraId).ToUpperInvariant();
+                var id = intent.GetStringExtra(NotificationAction.ExtraId);
 
                 switch (id)
                 {
                     case NotificationAction.Exit:
                         {
+                            context.StopService<TransmissionService>();
+                            context.TryCloseSystemDialogs();
+
                             System.Diagnostics.Process.GetCurrentProcess().Kill();
                             break;
                         }
