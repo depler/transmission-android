@@ -203,7 +203,7 @@ static void event_read_cb(evutil_socket_t fd, short /*event*/, void* vio)
     io->pendingEvents &= ~EV_READ;
 
     auto const curlen = io->readBufferSize();
-    auto howmuch = static_cast<unsigned int>(curlen >= max ? 0 : max - curlen);
+    auto howmuch = curlen >= max ? 0 : max - curlen;
     howmuch = io->bandwidth().clamp(TR_DOWN, howmuch);
 
     tr_logAddTraceIo(io, "libevent says this peer is ready to read");
@@ -339,7 +339,7 @@ void tr_peerIo::readBufferAdd(void const* data, size_t n_bytes)
 
 static size_t utp_get_rb_size(tr_peerIo* const io)
 {
-    size_t const bytes = io->bandwidth().clamp(TR_DOWN, UtpReadBufferSize);
+    auto const bytes = io->bandwidth().clamp(TR_DOWN, UtpReadBufferSize);
 
     tr_logAddTraceIo(io, fmt::format("utp_get_rb_size is saying it's ready to read {} bytes", bytes));
     return UtpReadBufferSize - bytes;
@@ -788,16 +788,13 @@ size_t tr_peerIo::getWriteBufferSpace(uint64_t now) const noexcept
 
 void tr_peerIo::write(libtransmission::Buffer& buf, bool is_piece_data)
 {
-    auto const n_bytes = std::size(buf);
-
-    auto const old_size = std::size(outbuf);
-    outbuf.add(buf);
-    for (auto iter = std::begin(outbuf) + old_size, end = std::end(outbuf); iter != end; ++iter)
+    for (auto& ch : buf)
     {
-        encrypt(1, &*iter);
+        encrypt(1, &ch);
     }
 
-    outbuf_info.emplace_back(n_bytes, is_piece_data);
+    outbuf_info.emplace_back(std::size(buf), is_piece_data);
+    outbuf.add(buf);
 }
 
 void tr_peerIo::writeBytes(void const* bytes, size_t n_bytes, bool is_piece_data)

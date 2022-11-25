@@ -54,7 +54,6 @@ static auto constexpr DefaultAnnounceMinIntervalSec = int{ 60 * 2 };
 static auto constexpr Numwant = int{ 80 };
 
 /* how often to announce & scrape */
-static auto constexpr UpkeepInterval = 500ms;
 static auto constexpr MaxAnnouncesPerUpkeep = int{ 20 };
 static auto constexpr MaxScrapesPerUpkeep = int{ 20 };
 
@@ -234,6 +233,8 @@ private:
     std::unique_ptr<libtransmission::Timer> const upkeep_timer_;
 
     std::set<tr_announce_request, StopsCompare> stops_;
+
+    static auto constexpr UpkeepInterval = 500ms;
 };
 
 std::unique_ptr<tr_announcer> tr_announcer::create(tr_session* session, tr_announcer_udp& announcer_udp)
@@ -1191,8 +1192,13 @@ static void tierAnnounce(tr_announcer_impl* announcer, tr_tier* tier)
 
     announcer->announce(
         req,
-        [announcer, tier_id, event, is_running_on_success](tr_announce_response const& response)
-        { announcer->onAnnounceDone(tier_id, event, is_running_on_success, response); });
+        [session = announcer->session, announcer, tier_id, event, is_running_on_success](tr_announce_response const& response)
+        {
+            if (session->announcer_)
+            {
+                announcer->onAnnounceDone(tier_id, event, is_running_on_success, response);
+            }
+        });
 }
 
 /***
@@ -1434,7 +1440,15 @@ static void multiscrape(tr_announcer_impl* announcer, std::vector<tr_tier*> cons
     /* send the requests we just built */
     for (size_t i = 0; i < request_count; ++i)
     {
-        announcer->scrape(requests[i], [announcer](tr_scrape_response const& response) { announcer->onScrapeDone(response); });
+        announcer->scrape(
+            requests[i],
+            [session = announcer->session, announcer](tr_scrape_response const& response)
+            {
+                if (session->announcer_)
+                {
+                    announcer->onScrapeDone(response);
+                }
+            });
     }
 }
 
@@ -1545,7 +1559,7 @@ void tr_announcer_impl::upkeep()
 ****
 ***/
 
-static tr_tracker_view trackerView(tr_torrent const& tor, int tier_index, tr_tier const& tier, tr_tracker const& tracker)
+static tr_tracker_view trackerView(tr_torrent const& tor, size_t tier_index, tr_tier const& tier, tr_tracker const& tracker)
 {
     auto const now = tr_time();
     auto view = tr_tracker_view{};
@@ -1633,7 +1647,6 @@ static tr_tracker_view trackerView(tr_torrent const& tor, int tier_index, tr_tie
         }
     }
 
-    TR_ASSERT(0 <= view.tier);
     return view;
 }
 
