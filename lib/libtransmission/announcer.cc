@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cinttypes> // PRIu64
 #include <climits> // INT_MAX
 #include <cstdio>
 #include <ctime>
@@ -213,7 +212,7 @@ public:
 
     tr_session* const session;
 
-    int const key = tr_rand_int(INT_MAX);
+    uint32_t const key = tr_rand_obj<uint32_t>();
 
 private:
     void flushCloseMessages()
