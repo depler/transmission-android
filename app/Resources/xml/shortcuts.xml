@@ -1,0 +1,24 @@
+﻿<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+	<shortcut
+	  android:shortcutId="stop"
+	  android:enabled="true"
+	  android:icon="@mipmap/ic_shutdown"
+	  android:shortcutShortLabel="@string/shortcut_stop">
+		<intent
+		  android:action="android.intent.action.VIEW"
+		  android:targetPackage="com.depler.transmission"
+		  android:targetClass="transmission.MainActivity"
+		  android:data="content://actions/stop"/>
+	</shortcut>
+	<shortcut
+	  android:shortcutId="update"
+	  android:enabled="true"
+	  android:icon="@mipmap/ic_update"
+	  android:shortcutShortLabel="@string/shortcut_update">
+		<intent
+		  android:action="android.intent.action.VIEW"
+		  android:targetPackage="com.depler.transmission"
+		  android:targetClass="transmission.MainActivity"
+		  android:data="content://actions/update"/>
+	</shortcut>
+</shortcuts>

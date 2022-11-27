@@ -1,14 +1,11 @@
-﻿using System;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
-using Android.Text.Style;
 using Android.Text;
+using Android.Text.Style;
 
 using AndroidX.Core.App;
-using Android.Graphics;
-using Xamarin.Essentials;
 
 namespace TransmissionAndroid.Code
 {
@@ -19,38 +16,14 @@ namespace TransmissionAndroid.Code
 
         public override async void OnReceive(Context context, Intent intent)
         {
-            try
-            {
-                var id = intent.GetStringExtra(NotificationAction.ExtraId);
-
-                switch (id)
-                {
-                    case NotificationAction.Exit:
-                        {
-                            context.StopService<TransmissionService>();
-                            context.TryCloseSystemDialogs();
-
-                            System.Diagnostics.Process.GetCurrentProcess().Kill();
-                            break;
-                        }
-                    case NotificationAction.Update:
-                        {
-                            await Launcher.OpenAsync("https://github.com/depler/transmission-android/releases");
-                            context.TryCloseSystemDialogs();
-                            break;
-                        }
-                }
-            }
-            catch (Exception ex)
-            {
-                context.ShowTextLong(ex.Message);
-            }
+            var action = intent.GetStringExtra(ContextAction.Id);
+            await ContextAction.TryHandle(context, action);
         }
 
         public static NotificationCompat.Action CreateAction(Context context, string text, Color color, string id = null)
         {
             var actionIntent = new Intent(context, typeof(NotificationActionReceiver));
-            actionIntent.PutExtra(NotificationAction.ExtraId, id ?? text);
+            actionIntent.PutExtra(ContextAction.Id, id ?? text);
 
             var pIntent = PendingIntent.GetBroadcast(context, ActionCounter++, actionIntent, PendingIntentFlags.CancelCurrent);
             var spanText = GetSpan(text, color);

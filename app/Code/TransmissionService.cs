@@ -81,8 +81,8 @@ namespace TransmissionAndroid.Code
 
             var contentBigText = new NotificationCompat.BigTextStyle().BigText(text);
 
-            var actionExit = NotificationActionReceiver.CreateAction(this, NotificationAction.Exit, Color.DarkRed);
-            var actionConfig = NotificationActionReceiver.CreateAction(this, NotificationAction.Update, Color.DarkBlue);
+            var actionExit = NotificationActionReceiver.CreateAction(this, ContextAction.Stop, Color.DarkRed);
+            var actionConfig = NotificationActionReceiver.CreateAction(this, ContextAction.Update, Color.DarkBlue);
 
             var notification = new NotificationCompat.Builder(this, notificationChannel)
                 .SetContentTitle(title)

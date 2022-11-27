@@ -5,12 +5,16 @@ using Android.OS;
 
 namespace TransmissionAndroid.Code
 {
-    [Activity(Label = "@string/app_name", Theme = "@android:style/Theme.Translucent.NoTitleBar", MainLauncher = true)]
+    [Activity(Name = "transmission.MainActivity", Label = "@string/app_name", Theme = "@android:style/Theme.Translucent.NoTitleBar", MainLauncher = true)]
+    [MetaData("android.app.shortcuts", Resource = "@xml/shortcuts")]
     public class MainActivity : Activity
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
+            if (await ContextAction.TryHandle(this, Intent?.Data?.LastPathSegment))
+                return;
 
             try
             {
