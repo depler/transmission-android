@@ -93,15 +93,15 @@
     <Compile Include="Code\TransmissionStatus.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\config\settings.json" />
-    <AndroidAsset Include="Assets\config\dht.bootstrap" />
+    <AndroidAsset Include="Assets\Config\settings.json" />
+    <AndroidAsset Include="Assets\Config\dht.bootstrap" />
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\strings.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\config\args.txt" />
+    <AndroidAsset Include="Assets\Config\args.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.2.0.5" />

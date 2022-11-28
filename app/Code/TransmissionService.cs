@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 
 using Android.App;
@@ -48,6 +49,9 @@ namespace TransmissionAndroid.Code
             }
             catch (Exception ex)
             {
+                if (ex is IOException || ex is UnauthorizedAccessException)
+                    this.ShowTextLong("Transmission failed. Check storage permissions.");
+
                 this.ShowTextLong(ex.Message);
                 throw;
             }
@@ -56,22 +60,22 @@ namespace TransmissionAndroid.Code
         private TransmissionConfig ConfigureTransmission()
         {
             var filesManager = new ExternalFilesManager(this);
-            if (filesManager.TryCreateFolder("config"))
+            if (filesManager.TryCreateFolder("Config"))
             {
-                filesManager.WriteConfigFile("config/settings.json");
-                filesManager.WriteArgsFile("config/args.txt");
-                filesManager.WriteFile("config/dht.bootstrap");
+                filesManager.WriteConfigFile("Config/settings.json");
+                filesManager.WriteArgsFile("Config/args.txt");
+                filesManager.WriteFile("Config/dht.bootstrap");
             }
 
-            filesManager.TryCreateFolder("web");
-            filesManager.TryCreateFolder("session");
-            filesManager.TryClearFolder("session");
+            filesManager.TryCreateFolder("Web");
+            filesManager.TryCreateFolder("Session");
+            filesManager.TryClearFolder("Session");
 
             return new TransmissionConfig()
             {
-                Args = filesManager.ReadFileLines("config/args.txt"),
-                WebFolder = filesManager.CombinePath("web"),
-                SessionFolder = filesManager.CombinePath("session"),
+                Args = filesManager.ReadFileLines("Config/args.txt"),
+                WebFolder = filesManager.CombinePath("Web"),
+                SessionFolder = filesManager.CombinePath("Session"),
             };
         }
 

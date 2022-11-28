@@ -13,24 +13,26 @@ namespace TransmissionAndroid.Code
         private static readonly Encoding _utf8 = new UTF8Encoding(false);
 
         private readonly AssetManager _assetManager;
-        private readonly Lazy<string> _externalFilesFolder;
-        private readonly Lazy<string> _externalStorageFolder;
+        private readonly Lazy<string> _transmissionFolder;
 
         public ExternalFilesManager(Context context)
         {
             _assetManager = context.Assets;
-            _externalFilesFolder = new Lazy<string>(() => context.GetExternalFilesDir(null).AbsolutePath, LazyThreadSafetyMode.None);
-            _externalStorageFolder = new Lazy<string>(() => Android.OS.Environment.ExternalStorageDirectory.Path, LazyThreadSafetyMode.None);            
+            _transmissionFolder = new Lazy<string>(() =>
+            {
+                var externalStorageFolder = Android.OS.Environment.ExternalStorageDirectory.Path;
+                return Path.Combine(externalStorageFolder, "Transmission");
+            }, LazyThreadSafetyMode.None);
         }
 
         public string CombinePath(string relativePath)
         {
-            return Path.Combine(_externalFilesFolder.Value, relativePath);
+            return Path.Combine(_transmissionFolder.Value, relativePath);
         }
 
         public string CombinePath(string relativePath1, string relativePath2)
         {
-            return Path.Combine(_externalFilesFolder.Value, relativePath1, relativePath2);
+            return Path.Combine(_transmissionFolder.Value, relativePath1, relativePath2);
         }
 
         public bool TryCreateFolder(string relativePath)
@@ -73,7 +75,7 @@ namespace TransmissionAndroid.Code
 
         public void WriteConfigFile(string assetPath)
         {
-            var torrentsFolder = Path.Combine(_externalStorageFolder.Value, "Torrents");
+            var torrentsFolder = Path.Combine(_transmissionFolder.Value, "Torrents");
             var content = ReadAssetString(assetPath).Replace("TORRENT_FOLDER_PATH", torrentsFolder);
 
             var destinationPath = CombinePath(assetPath);
