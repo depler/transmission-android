@@ -15,9 +15,9 @@ Clone current repository and build **TransmissionAndroid.sln** file with Visual 
 - root is not required
 
 # Config
-Application uses path `[external_storage]/Android/data/com.depler.transmission/files` as main folder. It contains subfolders `config` (application settings and service data) and `web` (web UI files). Some settings will be calculated in rutime at first launch. Probably you want/should change following settings in file `[app_folder]/config/settings.json`: `download-dir`, `incomplete-dir`. 
+Application uses path `[external_storage]/Transmission` as root folder. Permission `MANAGE_EXTERNAL_STORAGE` is mandatory to use this folder, you need to grant access manually in your device settings. Root folder contains subfolders `Config` (application settings and service data) and `Web` (web UI files). Some settings will be calculated in rutime at first launch. 
 
-Default folder for torrents is `[external_storage]/Torrents`. Permission `MANAGE_EXTERNAL_STORAGE` is mandatory to use this folder, you need to grant access manually in your device settings.
+Probably you want/should change following settings in file `[external_storage]/Transmission/Config/settings.json`: `download-dir`, `incomplete-dir`. Default folder for torrents is `[external_storage]/Transmission/Torrents`. 
 
 # Web UI
 Web UI files are not included in package. You can put your own files into `[app_folder]/web` folder (for example https://github.com/6c65726f79/Transmissionic). Then open http://localhost:9091 and you should see UI:
