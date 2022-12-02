@@ -497,9 +497,7 @@ static ReadState readVC(tr_handshake* handshake, tr_peerIo* peer_io)
 
 static ReadState readCryptoSelect(tr_handshake* handshake, tr_peerIo* peer_io)
 {
-    static size_t const needlen = sizeof(uint32_t) + sizeof(uint16_t);
-
-    if (peer_io->readBufferSize() < needlen)
+    if (static size_t constexpr NeedLen = sizeof(uint32_t) + sizeof(uint16_t); peer_io->readBufferSize() < NeedLen)
     {
         return READ_LATER;
     }
@@ -1094,7 +1092,7 @@ static void gotError(tr_peerIo* io, short what, void* vhandshake)
     {
         tr_logAddTraceHand(
             handshake,
-            fmt::format("libevent got an error what=={}, errno={} ({})", what, errcode, tr_strerror(errcode)));
+            fmt::format("libevent got an error: what={:d}, errno={:d} ({:s})", what, errcode, tr_strerror(errcode)));
         tr_handshakeDone(handshake, false);
     }
 }
