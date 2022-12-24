@@ -1902,8 +1902,8 @@ int wolfSSL_EVP_PKEY_CTX_set_hkdf_md(WOLFSSL_EVP_PKEY_CTX* ctx,
     return ret;
 }
 
-int wolfSSL_EVP_PKEY_CTX_set1_hkdf_salt(WOLFSSL_EVP_PKEY_CTX* ctx, byte* salt,
-                                        int saltSz)
+int wolfSSL_EVP_PKEY_CTX_set1_hkdf_salt(WOLFSSL_EVP_PKEY_CTX* ctx,
+                                        const byte* salt, int saltSz)
 {
     int ret = WOLFSSL_SUCCESS;
 
@@ -1938,8 +1938,8 @@ int wolfSSL_EVP_PKEY_CTX_set1_hkdf_salt(WOLFSSL_EVP_PKEY_CTX* ctx, byte* salt,
     return ret;
 }
 
-int wolfSSL_EVP_PKEY_CTX_set1_hkdf_key(WOLFSSL_EVP_PKEY_CTX* ctx, byte* key,
-                                       int keySz)
+int wolfSSL_EVP_PKEY_CTX_set1_hkdf_key(WOLFSSL_EVP_PKEY_CTX* ctx,
+                                       const byte* key, int keySz)
 {
     int ret = WOLFSSL_SUCCESS;
 
@@ -1974,8 +1974,8 @@ int wolfSSL_EVP_PKEY_CTX_set1_hkdf_key(WOLFSSL_EVP_PKEY_CTX* ctx, byte* key,
     return ret;
 }
 
-int wolfSSL_EVP_PKEY_CTX_add1_hkdf_info(WOLFSSL_EVP_PKEY_CTX* ctx, byte* info,
-                                        int infoSz)
+int wolfSSL_EVP_PKEY_CTX_add1_hkdf_info(WOLFSSL_EVP_PKEY_CTX* ctx,
+                                        const byte* info, int infoSz)
 {
     int ret = WOLFSSL_SUCCESS;
 
@@ -6779,8 +6779,8 @@ int wolfSSL_EVP_MD_type(const WOLFSSL_EVP_MD* type)
                  * combines them to a new iv. EVP is given exactly *one* iv,
                  * so to pass it into chacha, we have to revert that first.
                  * The counter comes first in little-endian */
-                word32 counter = (uint32_t)iv[0] + (uint32_t)(iv[1] << 8) +
-                    (uint32_t)(iv[2] << 16) + (uint32_t)(iv[3] << 24);
+                word32 counter = (word32)iv[0] + (word32)(iv[1] << 8) +
+                    (word32)(iv[2] << 16) + (word32)(iv[3] << 24);
                 if (wc_Chacha_SetIV(&ctx->cipher.chacha,
                                     iv + sizeof(counter), counter) != 0) {
 

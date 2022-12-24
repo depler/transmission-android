@@ -574,6 +574,15 @@ const char* wc_GetErrorString(int error)
     case SYSLIB_FAILED_E:
         return "System/library call failed";
 
+    case USE_HW_PSK:
+        return "Callback indicates that HW has PSK";
+
+    case ENTROPY_RT_E:
+        return "Entropy Repetition Test failed";
+
+    case ENTROPY_APT_E:
+        return "Entropy Adaptive Proportion Test failed";
+
     default:
         return "unknown error number";
 

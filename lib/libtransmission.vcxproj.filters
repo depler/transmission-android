@@ -1001,12 +1001,14 @@
     <ClCompile Include="libtransmission\crypto-utils-cyassl_mod.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
-    <ClCompile Include="wolfssl_src\src\ssl_mod.c" />
     <ClCompile Include="curl\lib\cfilters.c">
       <Filter>curl</Filter>
     </ClCompile>
     <ClCompile Include="curl\lib\idn.c">
       <Filter>curl</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfssl_src\src\ssl.c">
+      <Filter>wolfssl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

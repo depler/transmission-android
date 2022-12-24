@@ -372,7 +372,7 @@
     <ClCompile Include="wolfssl_src\src\internal.c" />
     <ClCompile Include="wolfssl_src\src\keys.c" />
     <ClCompile Include="wolfssl_src\src\ocsp.c" />
-    <ClCompile Include="wolfssl_src\src\ssl_mod.c" />
+    <ClCompile Include="wolfssl_src\src\ssl.c" />
     <ClCompile Include="wolfssl_src\src\tls.c" />
     <ClCompile Include="wolfssl_src\src\tls13.c" />
     <ClCompile Include="wolfssl_src\src\wolfio.c" />
