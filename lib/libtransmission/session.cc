@@ -75,7 +75,7 @@ tr_port tr_session::randomPort() const
     auto const lower = std::min(settings_.peer_port_random_low.host(), settings_.peer_port_random_high.host());
     auto const upper = std::max(settings_.peer_port_random_low.host(), settings_.peer_port_random_high.host());
     auto const range = upper - lower;
-    return tr_port::fromHost(lower + tr_rand_int_weak(range + 1));
+    return tr_port::fromHost(lower + tr_rand_int(range + 1U));
 }
 
 /* Generate a peer id : "-TRxyzb-" + 12 random alphanumeric
@@ -164,7 +164,7 @@ bool tr_session::LpdMediator::onPeerFound(std::string_view info_hash_str, tr_add
     // we found a suitable peer, add it to the torrent
     auto pex = tr_pex{ address, port };
     tr_peerMgrAddPex(tor, TR_PEER_FROM_LPD, &pex, 1U);
-    tr_logAddDebugTor(tor, fmt::format(FMT_STRING("Found a local peer from LPD ({:s})"), address.readable(port)));
+    tr_logAddDebugTor(tor, fmt::format(FMT_STRING("Found a local peer from LPD ({:s})"), address.display_name(port)));
     return true;
 }
 
@@ -221,7 +221,7 @@ std::optional<std::string> tr_session::WebMediator::publicAddressV4() const
     auto const [addr, is_default_value] = session_->publicAddress(TR_AF_INET);
     if (!is_default_value)
     {
-        return addr.readable();
+        return addr.display_name();
     }
 
     return std::nullopt;
@@ -232,7 +232,7 @@ std::optional<std::string> tr_session::WebMediator::publicAddressV6() const
     auto const [addr, is_default_value] = session_->publicAddress(TR_AF_INET6);
     if (!is_default_value)
     {
-        return addr.readable();
+        return addr.display_name();
     }
 
     return std::nullopt;
@@ -259,6 +259,11 @@ void tr_session::WebMediator::notifyBandwidthConsumed(int torrent_id, size_t byt
 void tr_session::WebMediator::run(tr_web::FetchDoneFunc&& func, tr_web::FetchResponse&& response) const
 {
     session_->runInSessionThread(std::move(func), std::move(response));
+}
+
+time_t tr_session::WebMediator::now() const
+{
+    return tr_time();
 }
 
 void tr_sessionFetch(tr_session* session, tr_web::FetchOptions&& options)
@@ -296,8 +301,8 @@ void tr_session::onIncomingPeerConnection(tr_socket_t fd, void* vsession)
     if (auto const incoming_info = tr_netAccept(session, fd); incoming_info)
     {
         auto const& [addr, port, sock] = *incoming_info;
-        tr_logAddTrace(fmt::format("new incoming connection {} ({})", sock, addr.readable(port)));
-        session->addIncoming(addr, port, tr_peer_socket_tcp_create(sock));
+        tr_logAddTrace(fmt::format("new incoming connection {} ({})", sock, addr.display_name(port)));
+        session->addIncoming(tr_peer_socket{ session, addr, port, sock });
     }
 }
 
@@ -318,7 +323,7 @@ tr_session::BoundSocket::BoundSocket(
     }
 
     tr_logAddInfo(
-        fmt::format(_("Listening to incoming peer connections on {hostport}"), fmt::arg("hostport", addr.readable(port))));
+        fmt::format(_("Listening to incoming peer connections on {hostport}"), fmt::arg("hostport", addr.display_name(port))));
     event_add(ev_.get(), nullptr);
 }
 
@@ -337,15 +342,15 @@ tr_session::PublicAddressResult tr_session::publicAddress(tr_address_type type) 
 {
     if (type == TR_AF_INET)
     {
-        static auto constexpr DefaultAddr = tr_address::AnyIPv4();
-        auto addr = tr_address::fromString(settings_.bind_address_ipv4).value_or(DefaultAddr);
+        static auto constexpr DefaultAddr = tr_address::any_ipv4();
+        auto addr = tr_address::from_string(settings_.bind_address_ipv4).value_or(DefaultAddr);
         return { addr, addr == DefaultAddr };
     }
 
     if (type == TR_AF_INET6)
     {
-        static auto constexpr DefaultAddr = tr_address::AnyIPv6();
-        auto addr = tr_address::fromString(settings_.bind_address_ipv6).value_or(DefaultAddr);
+        static auto constexpr DefaultAddr = tr_address::any_ipv6();
+        auto addr = tr_address::from_string(settings_.bind_address_ipv6).value_or(DefaultAddr);
         return { addr, addr == DefaultAddr };
     }
 
@@ -508,24 +513,6 @@ void tr_session::onNowTimer()
     tr_timeUpdate(time(nullptr));
     alt_speeds_.checkScheduler();
 
-    // TODO: this seems a little silly. Why do we increment this
-    // every second instead of computing the value as needed by
-    // subtracting the current time from a start time?
-    for (auto* const tor : torrents())
-    {
-        if (tor->isRunning)
-        {
-            if (tor->isDone())
-            {
-                ++tor->secondsSeeding;
-            }
-            else
-            {
-                ++tor->secondsDownloading;
-            }
-        }
-    }
-
     // set the timer to kick again right after (10ms after) the next second
     auto const now = std::chrono::system_clock::now();
     auto const target_time = std::chrono::time_point_cast<std::chrono::seconds>(now) + 1s + 10ms;
@@ -664,6 +651,11 @@ void tr_session::setSettings(tr_session_settings&& settings_in, bool force)
         bound_ipv4_.reset();
         bound_ipv6_.reset();
         addr_changed = true;
+    }
+
+    if (auto const& val = new_settings.port_forwarding_enabled; force || val != old_settings.port_forwarding_enabled)
+    {
+        tr_sessionSetPortForwardingEnabled(this, val);
     }
 
     if (port_changed)
@@ -1187,13 +1179,6 @@ void tr_sessionSetDeleteSource(tr_session* session, bool delete_source)
     session->settings_.should_delete_source_torrents = delete_source;
 }
 
-bool tr_sessionGetDeleteSource(tr_session const* session)
-{
-    TR_ASSERT(session != nullptr);
-
-    return session->shouldDeleteSource();
-}
-
 /***
 ****
 ***/
@@ -1214,7 +1199,6 @@ void tr_session::closeImplPart1(std::promise<void>* closed_promise, std::chrono:
 
     // close the low-hanging fruit that can be closed immediately w/o consequences
     utp_timer.reset();
-    tr_utpClose(this);
     verifier_.reset();
     save_timer_.reset();
     now_timer_.reset();
@@ -1275,11 +1259,12 @@ void tr_session::closeImplPart2(std::promise<void>* closed_promise, std::chrono:
 
     this->announcer_.reset();
     this->announcer_udp_.reset();
-    this->udp_core_.reset();
 
     stats().saveIfDirty();
     peer_mgr_.reset();
     openFiles().closeAll();
+    tr_utpClose(this);
+    this->udp_core_.reset();
 
     // tada we are done!
     closed_promise->set_value();
@@ -2196,9 +2181,9 @@ tr_session::tr_session(std::string_view config_dir, tr_variant* settings_dict)
     verifier_->addCallback(tr_torrentOnVerifyDone);
 }
 
-void tr_session::addIncoming(tr_address const& addr, tr_port port, struct tr_peer_socket const socket)
+void tr_session::addIncoming(tr_peer_socket&& socket)
 {
-    tr_peerMgrAddIncoming(peer_mgr_.get(), addr, port, socket);
+    tr_peerMgrAddIncoming(peer_mgr_.get(), std::move(socket));
 }
 
 void tr_session::addTorrent(tr_torrent* tor)

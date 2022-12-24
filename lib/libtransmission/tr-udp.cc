@@ -214,7 +214,7 @@ static void event_callback(evutil_socket_t s, [[maybe_unused]] short type, void*
         }
         else
         {
-            if (session->allowsUTP())
+            if (session->allowsUTP() && (session->utp_context != nullptr))
             {
                 if (!tr_utpPacket(std::data(buf), rc, (struct sockaddr*)&from, fromlen, session))
                 {
@@ -259,7 +259,7 @@ tr_session::tr_udp_core::tr_udp_core(tr_session& session, tr_port udp_port)
             auto const error_code = errno;
             tr_logAddWarn(fmt::format(
                 _("Couldn't bind IPv4 socket {address}: {error} ({error_code})"),
-                fmt::arg("address", public_addr.readable(udp_port_)),
+                fmt::arg("address", public_addr.display_name(udp_port_)),
                 fmt::arg("error", tr_strerror(error_code)),
                 fmt::arg("error_code", error_code)));
             tr_netCloseSocket(udp_socket_);

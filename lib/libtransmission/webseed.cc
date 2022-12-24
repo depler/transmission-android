@@ -230,7 +230,7 @@ public:
         return {};
     }
 
-    [[nodiscard]] std::string readable() const override
+    [[nodiscard]] std::string display_name() const override
     {
         if (auto const parsed = tr_urlParse(base_url); parsed)
         {
@@ -452,15 +452,15 @@ void onPartialDataFetched(tr_web::FetchResponse const& web_response)
     bool const success = status == 206;
 
     auto* const task = static_cast<tr_webseed_task*>(vtask);
-    auto* const webseed = task->webseed;
-
-    webseed->connection_limiter.taskFinished(success);
 
     if (task->dead)
     {
         delete task;
         return;
     }
+
+    auto* const webseed = task->webseed;
+    webseed->connection_limiter.taskFinished(success);
 
     if (auto const* const tor = webseed->getTorrent(); tor == nullptr)
     {

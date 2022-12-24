@@ -84,10 +84,7 @@ extern "C"
 
     int dht_random_bytes(void* buf, size_t size)
     {
-        if (!tr_rand_buffer(buf, size))
-        {
-            return -1;
-        }
+        tr_rand_buffer(buf, size);
         return static_cast<int>(size);
     }
 
@@ -180,7 +177,7 @@ public:
 
     void addNode(tr_address const& addr, tr_port port) override
     {
-        if (addr.isIPv4())
+        if (addr.is_ipv4())
         {
             auto sin = sockaddr_in{};
             sin.sin_family = AF_INET;
@@ -188,7 +185,7 @@ public:
             sin.sin_port = port.network();
             mediator_.api().ping_node((struct sockaddr*)&sin, sizeof(sin));
         }
-        else if (addr.isIPv6())
+        else if (addr.is_ipv6())
         {
             auto sin6 = sockaddr_in6{};
             sin6.sin6_family = AF_INET6;
@@ -204,7 +201,7 @@ public:
 
         // Being slightly late is fine,
         // and has the added benefit of adding some jitter.
-        auto const interval = call_again_in_n_secs + std::chrono::milliseconds{ tr_rand_int_weak(1000) };
+        auto const interval = call_again_in_n_secs + std::chrono::milliseconds{ tr_rand_int(1000U) };
         periodic_timer_->startSingleShot(interval);
     }
 
@@ -323,8 +320,8 @@ private:
     {
         auto const* dht_hash = reinterpret_cast<unsigned char const*>(std::data(info_hash));
         auto const rc = mediator_.api().search(dht_hash, port.host(), af, callback, this);
-        auto const announce_again_in_n_secs = rc < 0 ? 5s + std::chrono::seconds{ tr_rand_int_weak(5) } :
-                                                       25min + std::chrono::seconds{ tr_rand_int_weak(3 * 60) };
+        auto const announce_again_in_n_secs = rc < 0 ? 5s + std::chrono::seconds{ tr_rand_int(5U) } :
+                                                       25min + std::chrono::seconds{ tr_rand_int(3U * 60U) };
         return announce_again_in_n_secs;
     }
 
@@ -363,7 +360,7 @@ private:
 
         // Being slightly late is fine,
         // and has the added benefit of adding some jitter.
-        auto const interval = call_again_in_n_secs + std::chrono::milliseconds{ tr_rand_int_weak(1000) };
+        auto const interval = call_again_in_n_secs + std::chrono::milliseconds{ tr_rand_int(1000U) };
         periodic_timer_->startSingleShot(interval);
     }
 
@@ -388,12 +385,12 @@ private:
 
         if (event == DHT_EVENT_VALUES)
         {
-            auto const pex = tr_pex::fromCompact4(data, data_len, nullptr, 0);
+            auto const pex = tr_pex::from_compact_ipv4(data, data_len, nullptr, 0);
             self->mediator_.addPex(hash, std::data(pex), std::size(pex));
         }
         else if (event == DHT_EVENT_VALUES6)
         {
-            auto const pex = tr_pex::fromCompact6(data, data_len, nullptr, 0);
+            auto const pex = tr_pex::from_compact_ipv6(data, data_len, nullptr, 0);
             self->mediator_.addPex(hash, std::data(pex), std::size(pex));
         }
     }
@@ -480,7 +477,7 @@ private:
                 {
                     auto addr = tr_address{};
                     auto port = tr_port{};
-                    std::tie(addr, walk) = tr_address::fromCompact4(walk);
+                    std::tie(addr, walk) = tr_address::from_compact_ipv4(walk);
                     std::tie(port, walk) = tr_port::fromCompact(walk);
                     nodes.emplace_back(addr, port);
                 }
@@ -494,7 +491,7 @@ private:
                 {
                     auto addr = tr_address{};
                     auto port = tr_port{};
-                    std::tie(addr, walk) = tr_address::fromCompact6(walk);
+                    std::tie(addr, walk) = tr_address::from_compact_ipv6(walk);
                     std::tie(port, walk) = tr_port::fromCompact(walk);
                     nodes.emplace_back(addr, port);
                 }
@@ -564,7 +561,7 @@ private:
 
         for (auto* infop = info; infop != nullptr; infop = infop->ai_next)
         {
-            if (auto addrport = tr_address::fromSockaddr(infop->ai_addr); addrport)
+            if (auto addrport = tr_address::from_sockaddr(infop->ai_addr); addrport)
             {
                 nodes.emplace_back(addrport->first, addrport->second);
             }

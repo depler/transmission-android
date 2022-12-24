@@ -797,9 +797,6 @@
     <ClCompile Include="libtransmission\inout.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
-    <ClCompile Include="libtransmission\jsonsl.c">
-      <Filter>libtransmission</Filter>
-    </ClCompile>
     <ClCompile Include="libtransmission\log_mod.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
@@ -947,9 +944,6 @@
     <ClCompile Include="libtransmission\webseed.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
-    <ClCompile Include="libtransmission\wildmat.c">
-      <Filter>libtransmission</Filter>
-    </ClCompile>
     <ClCompile Include="libtransmission\file-posix.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
@@ -1010,6 +1004,15 @@
     <ClCompile Include="wolfssl_src\src\ssl.c">
       <Filter>wolfssl</Filter>
     </ClCompile>
+    <ClCompile Include="jsonsl\jsonsl.c">
+      <Filter>jsonsl</Filter>
+    </ClCompile>
+    <ClCompile Include="wildmat\wildmat.c">
+      <Filter>wildmat</Filter>
+    </ClCompile>
+    <ClCompile Include="libtransmission\peer-socket.cc">
+      <Filter>libtransmission</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="zlib">
@@ -1065,6 +1068,12 @@
     </Filter>
     <Filter Include="libdeflate\arm">
       <UniqueIdentifier>{306f11e9-6f25-4229-9826-5caa97b7e94d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jsonsl">
+      <UniqueIdentifier>{0374acf5-b7ce-4660-888f-09c1ab45a472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wildmat">
+      <UniqueIdentifier>{f6bf1dd9-9892-4b6c-9dc2-5faf0e3bf8a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1986,9 +1995,6 @@
     <ClInclude Include="libtransmission\interned-string.h">
       <Filter>libtransmission</Filter>
     </ClInclude>
-    <ClInclude Include="libtransmission\jsonsl.h">
-      <Filter>libtransmission</Filter>
-    </ClInclude>
     <ClInclude Include="libtransmission\log.h">
       <Filter>libtransmission</Filter>
     </ClInclude>
@@ -2225,6 +2231,12 @@
     </ClInclude>
     <ClInclude Include="curl\lib\vtls\vtls_int.h">
       <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="jsonsl\jsonsl.h">
+      <Filter>jsonsl</Filter>
+    </ClInclude>
+    <ClInclude Include="wildmat\wildmat.h">
+      <Filter>wildmat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

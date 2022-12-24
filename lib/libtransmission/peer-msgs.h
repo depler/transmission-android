@@ -9,6 +9,7 @@
 #error only libtransmission should #include this header.
 #endif
 
+#include <atomic>
 #include <cstdint> // int8_t
 #include <cstddef> // size_t
 #include <ctime> // time_t
@@ -35,6 +36,14 @@ public:
         : tr_peer{ tor, atom_in }
         , have_{ tor->pieceCount() }
     {
+        ++n_peers_;
+    }
+
+    virtual ~tr_peerMsgs() override;
+
+    [[nodiscard]] static size_t size() noexcept
+    {
+        return n_peers_.load();
     }
 
     [[nodiscard]] virtual bool is_peer_choked() const noexcept = 0;
@@ -48,8 +57,6 @@ public:
 
     [[nodiscard]] virtual bool is_active(tr_direction direction) const = 0;
     virtual void update_active(tr_direction direction) = 0;
-
-    [[nodiscard]] virtual bool is_connection_older_than(time_t time) const noexcept = 0;
 
     [[nodiscard]] virtual std::pair<tr_address, tr_port> socketAddress() const = 0;
 
@@ -69,6 +76,9 @@ public:
 
 protected:
     tr_bitfield have_;
+
+private:
+    static inline auto n_peers_ = std::atomic<size_t>{};
 };
 
 tr_peerMsgs* tr_peerMsgsNew(

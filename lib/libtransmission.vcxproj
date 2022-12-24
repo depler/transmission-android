@@ -39,11 +39,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <UseMultiToolTask>true</UseMultiToolTask>
-    <IncludePath>./;./natpmp;./zlib;./arc4;./utfcpp;./libdeflate;./libpsl;./curl/include;./curl/lib;./wolfssl_src;$(IncludePath)</IncludePath>
+    <IncludePath>./;./natpmp;./zlib;./arc4;./utfcpp;./libdeflate;./libpsl;./wildmat;./jsonsl;./curl/include;./curl/lib;./wolfssl_src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <UseMultiToolTask>true</UseMultiToolTask>
-    <IncludePath>./;./natpmp;./zlib;./arc4;./utfcpp;./libdeflate;./libpsl;./curl/include;./curl/lib;./wolfssl_src;$(IncludePath)</IncludePath>
+    <IncludePath>./;./natpmp;./zlib;./arc4;./utfcpp;./libdeflate;./libpsl;./wildmat;./jsonsl;./curl/include;./curl/lib;./wolfssl_src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -263,6 +263,7 @@
     <ClCompile Include="event2\strlcpy.c" />
     <ClCompile Include="fmt\format.cc" />
     <ClCompile Include="fmt\os.cc" />
+    <ClCompile Include="jsonsl\jsonsl.c" />
     <ClCompile Include="libdeflate\lib\arm\cpu_features.c" />
     <ClCompile Include="libdeflate\lib\crc32.c" />
     <ClCompile Include="libdeflate\lib\deflate_compress.c" />
@@ -291,7 +292,6 @@
     <ClCompile Include="libtransmission\file.cc" />
     <ClCompile Include="libtransmission\handshake.cc" />
     <ClCompile Include="libtransmission\inout.cc" />
-    <ClCompile Include="libtransmission\jsonsl.c" />
     <ClCompile Include="libtransmission\log_mod.cc" />
     <ClCompile Include="libtransmission\magnet-metainfo.cc" />
     <ClCompile Include="libtransmission\makemeta.cc" />
@@ -303,6 +303,7 @@
     <ClCompile Include="libtransmission\peer-mgr.cc" />
     <ClCompile Include="libtransmission\peer-mse.cc" />
     <ClCompile Include="libtransmission\peer-msgs.cc" />
+    <ClCompile Include="libtransmission\peer-socket.cc" />
     <ClCompile Include="libtransmission\platform-quota_mod.cc" />
     <ClCompile Include="libtransmission\platform_mod.cc" />
     <ClCompile Include="libtransmission\port-forwarding-natpmp.cc" />
@@ -343,7 +344,6 @@
     <ClCompile Include="libtransmission\web-utils.cc" />
     <ClCompile Include="libtransmission\web.cc" />
     <ClCompile Include="libtransmission\webseed.cc" />
-    <ClCompile Include="libtransmission\wildmat.c" />
     <ClCompile Include="libutp\utp_api.cpp" />
     <ClCompile Include="libutp\utp_callbacks.cpp" />
     <ClCompile Include="libutp\utp_hash.cpp" />
@@ -367,6 +367,7 @@
     <ClCompile Include="natpmp\getgateway.c" />
     <ClCompile Include="natpmp\natpmp.c" />
     <ClCompile Include="export.cpp" />
+    <ClCompile Include="wildmat\wildmat.c" />
     <ClCompile Include="wolfssl_src\src\dtls.c" />
     <ClCompile Include="wolfssl_src\src\dtls13.c" />
     <ClCompile Include="wolfssl_src\src\internal.c" />
@@ -657,6 +658,7 @@
     <ClInclude Include="fmt\ranges.h" />
     <ClInclude Include="fmt\std.h" />
     <ClInclude Include="fmt\xchar.h" />
+    <ClInclude Include="jsonsl\jsonsl.h" />
     <ClInclude Include="libdeflate\lib\arm\cpu_features.h" />
     <ClInclude Include="libdeflate\lib\arm\crc32_impl.h" />
     <ClInclude Include="libdeflate\lib\arm\matchfinder_impl.h" />
@@ -693,7 +695,6 @@
     <ClInclude Include="libtransmission\history.h" />
     <ClInclude Include="libtransmission\inout.h" />
     <ClInclude Include="libtransmission\interned-string.h" />
-    <ClInclude Include="libtransmission\jsonsl.h" />
     <ClInclude Include="libtransmission\log.h" />
     <ClInclude Include="libtransmission\lru-cache.h" />
     <ClInclude Include="libtransmission\magnet-metainfo.h" />
@@ -793,6 +794,7 @@
     <ClInclude Include="utfcpp\utf8\cpp11.h" />
     <ClInclude Include="utfcpp\utf8\cpp17.h" />
     <ClInclude Include="utfcpp\utf8\unchecked.h" />
+    <ClInclude Include="wildmat\wildmat.h" />
     <ClInclude Include="wolfssl\wolfcrypt\user_settings.h" />
     <ClInclude Include="zlib\crc32.h" />
     <ClInclude Include="zlib\deflate.h" />
