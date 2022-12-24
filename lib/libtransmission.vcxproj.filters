@@ -206,9 +206,6 @@
     <ClCompile Include="wolfssl_src\wolfcrypt\src\sp_int.c">
       <Filter>wolfssl</Filter>
     </ClCompile>
-    <ClCompile Include="wolfssl_src\src\ssl.c">
-      <Filter>wolfssl</Filter>
-    </ClCompile>
     <ClCompile Include="wolfssl_src\src\tls.c">
       <Filter>wolfssl</Filter>
     </ClCompile>
@@ -1003,6 +1000,13 @@
     </ClCompile>
     <ClCompile Include="libtransmission\crypto-utils-cyassl_mod.cc">
       <Filter>libtransmission</Filter>
+    </ClCompile>
+    <ClCompile Include="wolfssl_src\src\ssl_mod.c" />
+    <ClCompile Include="curl\lib\cfilters.c">
+      <Filter>curl</Filter>
+    </ClCompile>
+    <ClCompile Include="curl\lib\idn.c">
+      <Filter>curl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2210,6 +2214,15 @@
     </ClInclude>
     <ClInclude Include="libdeflate\lib\arm\crc32_impl.h">
       <Filter>libdeflate\arm</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\lib\cfilters.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\lib\idn.h">
+      <Filter>curl</Filter>
+    </ClInclude>
+    <ClInclude Include="curl\lib\vtls\vtls_int.h">
+      <Filter>curl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
