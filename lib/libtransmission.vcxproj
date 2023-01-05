@@ -284,7 +284,7 @@
     <ClCompile Include="libtransmission\cache.cc" />
     <ClCompile Include="libtransmission\clients.cc" />
     <ClCompile Include="libtransmission\completion.cc" />
-    <ClCompile Include="libtransmission\crypto-utils-wolfssl_mod.cc" />
+    <ClCompile Include="libtransmission\crypto-utils-wolfssl.cc" />
     <ClCompile Include="libtransmission\crypto-utils.cc" />
     <ClCompile Include="libtransmission\error.cc" />
     <ClCompile Include="libtransmission\file-piece-map.cc" />
@@ -343,7 +343,7 @@
     <ClCompile Include="libtransmission\watchdir-generic.cc" />
     <ClCompile Include="libtransmission\watchdir.cc" />
     <ClCompile Include="libtransmission\web-utils.cc" />
-    <ClCompile Include="libtransmission\web.cc" />
+    <ClCompile Include="libtransmission\web_mod.cc" />
     <ClCompile Include="libtransmission\webseed.cc" />
     <ClCompile Include="libutp\utp_api.cpp" />
     <ClCompile Include="libutp\utp_callbacks.cpp" />

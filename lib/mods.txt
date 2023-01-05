@@ -1,5 +1,5 @@
 curl\lib\curl_setup.h
-libtransmission\crypto-utils-wolfssl_mod.cc
+libtransmission\web_mod.cc
 libtransmission\log_mod.cc
 libtransmission\platform_mod.cc
 libtransmission\platform-quota_mod.cc

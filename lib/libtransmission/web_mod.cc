@@ -95,6 +95,16 @@ using easy_unique_ptr = std::unique_ptr<CURL, EasyDeleter>;
 
 } // namespace curl_helpers
 
+#ifdef __ANDROID__
+#include <wolfssl/ssl.h>
+
+static CURLcode ssl_context_func(CURL* /*curl*/, void* ssl_ctx, void* /*user_data*/)
+{
+    wolfSSL_CTX_load_system_CA_certs((WOLFSSL_CTX*)ssl_ctx);
+    return CURLE_OK;
+}
+#endif
+
 #ifdef _WIN32
 static CURLcode ssl_context_func(CURL* /*curl*/, void* ssl_ctx, void* /*user_data*/)
 {
@@ -504,6 +514,10 @@ public:
         }
         else
         {
+#ifdef __ANDROID__
+            (void)curl_easy_setopt(e, CURLOPT_SSL_CTX_FUNCTION, ssl_context_func);
+#endif
+
 #ifdef _WIN32
             (void)curl_easy_setopt(e, CURLOPT_SSL_CTX_FUNCTION, ssl_context_func);
 #endif
