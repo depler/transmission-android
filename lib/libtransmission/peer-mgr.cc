@@ -158,18 +158,23 @@ struct peer_atom
         , fromBest{ from }
         , flags{ flags_in }
     {
-        ++n_atoms_;
+        ++n_atoms;
     }
+
+    peer_atom(peer_atom&&) = delete;
+    peer_atom(peer_atom const&) = delete;
+    peer_atom& operator=(peer_atom&&) = delete;
+    peer_atom& operator=(peer_atom const&) = delete;
 
     ~peer_atom()
     {
-        [[maybe_unused]] auto const n_prev = n_atoms_--;
+        [[maybe_unused]] auto const n_prev = n_atoms--;
         TR_ASSERT(n_prev > 0U);
     }
 
     [[nodiscard]] static auto atom_count() noexcept
     {
-        return n_atoms_.load();
+        return n_atoms.load();
     }
 
     [[nodiscard]] constexpr auto isSeed() const noexcept
@@ -299,7 +304,7 @@ private:
     // the minimum we'll wait before attempting to reconnect to a peer
     static auto constexpr MinimumReconnectIntervalSecs = int{ 5 };
 
-    static auto inline n_atoms_ = std::atomic<size_t>{};
+    static auto inline n_atoms = std::atomic<size_t>{};
 };
 
 using Handshakes = std::map<tr_address, tr_handshake>;
@@ -1193,11 +1198,11 @@ void tr_peerMgrAddIncoming(tr_peerMgr* manager, tr_peer_socket&& socket)
     if (session->addressIsBlocked(socket.address()))
     {
         tr_logAddTrace(fmt::format("Banned IP address '{}' tried to connect to us", socket.display_name()));
-        socket.close(session);
+        socket.close();
     }
     else if (manager->incoming_handshakes.count(socket.address()) != 0U)
     {
-        socket.close(session);
+        socket.close();
     }
     else /* we don't have a connection to them yet... */
     {
@@ -2721,7 +2726,9 @@ void initiateConnection(tr_peerMgr* mgr, tr_swarm* s, peer_atom& atom)
         utp = utp && (atom.flags & ADDED_F_UTP_FLAGS) != 0;
     }
 
-    if (!utp && !mgr->session->allowsTCP())
+    auto* const session = mgr->session;
+
+    if (tr_peer_socket::limit_reached(session) || (!utp && !session->allowsTCP()))
     {
         return;
     }
@@ -2731,8 +2738,8 @@ void initiateConnection(tr_peerMgr* mgr, tr_swarm* s, peer_atom& atom)
         fmt::format("Starting an OUTGOING {} connection with {}", utp ? " µTP" : "TCP", atom.display_name()));
 
     auto peer_io = tr_peerIo::new_outgoing(
-        mgr->session,
-        &mgr->session->top_bandwidth_,
+        session,
+        &session->top_bandwidth_,
         atom.addr,
         atom.port,
         s->tor->infoHash(),
@@ -2751,7 +2758,7 @@ void initiateConnection(tr_peerMgr* mgr, tr_swarm* s, peer_atom& atom)
             atom.addr,
             &mgr->handshake_mediator_,
             peer_io,
-            mgr->session->encryptionMode(),
+            session->encryptionMode(),
             [mgr](tr_handshake::Result const& result) { return on_handshake_done(mgr, result); });
     }
 

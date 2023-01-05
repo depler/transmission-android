@@ -228,8 +228,10 @@ public:
         Task(tr_web::Impl& impl_in, tr_web::FetchOptions&& options_in)
             : impl{ impl_in }
             , options{ std::move(options_in) }
-            , easy_{ impl.get_easy(tr_urlParse(options.url)->host) }
         {
+            auto const parsed = tr_urlParse(options.url);
+            easy_ = parsed ? impl.get_easy(parsed->host) : nullptr;
+
             response.user_data = options.done_func_user_data;
         }
 
@@ -245,7 +247,7 @@ public:
             easy_dispose(easy_);
         }
 
-        [[nodiscard]] auto* easy() const
+        [[nodiscard]] constexpr auto* easy() const
         {
             return easy_;
         }
@@ -255,42 +257,42 @@ public:
             return options.buffer != nullptr ? options.buffer : privbuf.get();
         }
 
-        [[nodiscard]] auto const& speedLimitTag() const
+        [[nodiscard]] constexpr auto const& speedLimitTag() const
         {
             return options.speed_limit_tag;
         }
 
-        [[nodiscard]] auto const& url() const
+        [[nodiscard]] constexpr auto const& url() const
         {
             return options.url;
         }
 
-        [[nodiscard]] auto const& range() const
+        [[nodiscard]] constexpr auto const& range() const
         {
             return options.range;
         }
 
-        [[nodiscard]] auto const& cookies() const
+        [[nodiscard]] constexpr auto const& cookies() const
         {
             return options.cookies;
         }
 
-        [[nodiscard]] auto const& sndbuf() const
+        [[nodiscard]] constexpr auto const& sndbuf() const
         {
             return options.sndbuf;
         }
 
-        [[nodiscard]] auto const& rcvbuf() const
+        [[nodiscard]] constexpr auto const& rcvbuf() const
         {
             return options.rcvbuf;
         }
 
-        [[nodiscard]] auto const& timeoutSecs() const
+        [[nodiscard]] constexpr auto const& timeoutSecs() const
         {
             return options.timeout_secs;
         }
 
-        [[nodiscard]] auto ipProtocol() const
+        [[nodiscard]] constexpr auto ipProtocol() const
         {
             switch (options.ip_proto)
             {
@@ -365,7 +367,7 @@ public:
 
         tr_web::FetchOptions options;
 
-        CURL* const easy_;
+        CURL* easy_;
     };
 
     static auto constexpr BandwidthPauseMsec = long{ 500 };

@@ -992,7 +992,7 @@
     <ClCompile Include="wolfssl_src\src\tls13.c">
       <Filter>wolfssl</Filter>
     </ClCompile>
-    <ClCompile Include="libtransmission\crypto-utils-cyassl_mod.cc">
+    <ClCompile Include="libtransmission\crypto-utils-wolfssl_mod.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
     <ClCompile Include="curl\lib\cfilters.c">
@@ -1011,6 +1011,9 @@
       <Filter>wildmat</Filter>
     </ClCompile>
     <ClCompile Include="libtransmission\peer-socket.cc">
+      <Filter>libtransmission</Filter>
+    </ClCompile>
+    <ClCompile Include="libtransmission\utils-ev.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
   </ItemGroup>

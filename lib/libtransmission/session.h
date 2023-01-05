@@ -285,7 +285,7 @@ private:
 
         [[nodiscard]] constexpr auto socket4() const noexcept
         {
-            return udp_socket_;
+            return udp4_socket_;
         }
 
         [[nodiscard]] constexpr auto socket6() const noexcept
@@ -294,23 +294,12 @@ private:
         }
 
     private:
-        void set_socket_buffers();
-
-        void set_socket_tos()
-        {
-            session_.setSocketTOS(udp_socket_, TR_AF_INET);
-            session_.setSocketTOS(udp6_socket_, TR_AF_INET6);
-        }
-
         tr_port const udp_port_;
         tr_session& session_;
-        tr_socket_t udp_socket_ = TR_BAD_SOCKET;
+        tr_socket_t udp4_socket_ = TR_BAD_SOCKET;
         tr_socket_t udp6_socket_ = TR_BAD_SOCKET;
         libtransmission::evhelpers::event_unique_ptr udp4_event_;
         libtransmission::evhelpers::event_unique_ptr udp6_event_;
-        std::optional<in6_addr> udp6_bound_;
-
-        void rebind_ipv6(bool);
     };
 
 public:
@@ -475,11 +464,6 @@ public:
 
     [[nodiscard]] bool useRpcWhitelist() const;
 
-    [[nodiscard]] constexpr auto externalIP() const noexcept
-    {
-        return external_ip_;
-    }
-
     void setExternalIP(tr_address external_ip)
     {
         external_ip_ = external_ip;
@@ -510,25 +494,6 @@ public:
     [[nodiscard]] constexpr auto peerLimitPerTorrent() const noexcept
     {
         return settings_.peer_limit_per_torrent;
-    }
-
-    [[nodiscard]] constexpr bool incPeerCount() noexcept
-    {
-        if (this->peer_count_ >= this->peerLimit())
-        {
-            return false;
-        }
-
-        ++this->peer_count_;
-        return true;
-    }
-
-    constexpr void decPeerCount() noexcept
-    {
-        if (this->peer_count_ > 0)
-        {
-            --this->peer_count_;
-        }
     }
 
     // bandwidth
@@ -810,7 +775,7 @@ public:
     struct PublicAddressResult
     {
         tr_address address;
-        bool is_default_value;
+        bool is_any_addr;
     };
 
     [[nodiscard]] PublicAddressResult publicAddress(tr_address_type type) const noexcept;
@@ -1074,8 +1039,6 @@ private:
     // e.g. if the public device is a router that chose to use a different
     // port than the one requested by Transmission.
     tr_port advertised_peer_port_;
-
-    uint16_t peer_count_ = 0;
 
     bool is_closing_ = false;
 
