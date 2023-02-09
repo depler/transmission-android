@@ -86,7 +86,7 @@ namespace TransmissionAndroid.Code
         {
             var configRelativePath = Path.GetDirectoryName(assetPath);
             var configFolder = CombinePath(configRelativePath);
-            var logFile = CombinePath(configRelativePath, "log.txt");
+            var logFile = CombinePath(configRelativePath, "transmission.log");
 
             var content = ReadAssetString(assetPath)
                 .Replace("CONFIG_FOLDER_PATH", configFolder)
