@@ -51,7 +51,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/%(filename).o</ObjectFileName>
-      <PreprocessorDefinitions>POSIX;__TRANSMISSION__;NATPMP_STATICLIB;MINIUPNP_STATICLIB;ENABLE_STRNATPMPERR;WITH_UTP;HAVE_LIBZ;HAVE_ZLIB_H;BUILDING_LIBCURL;CURL_STATICLIB;USE_WOLFSSL;USE_IPV6;USE_LIBPSL;PSL_STATIC;CYASSL_IS_WOLFSSL;WOLFSSL_USER_SETTINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POSIX;__TRANSMISSION__;NATPMP_STATICLIB;MINIUPNP_STATICLIB;ENABLE_STRNATPMPERR;WITH_UTP;HAVE_LIBZ;HAVE_ZLIB_H;BUILDING_LIBCURL;CURL_STATICLIB;USE_WOLFSSL;USE_IPV6;USE_LIBPSL;PSL_STATIC;FORCE_BUILTIN_LIST;CYASSL_IS_WOLFSSL;WOLFSSL_USER_SETTINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
@@ -66,7 +66,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/%(filename).o</ObjectFileName>
-      <PreprocessorDefinitions>POSIX;__TRANSMISSION__;NATPMP_STATICLIB;MINIUPNP_STATICLIB;ENABLE_STRNATPMPERR;WITH_UTP;HAVE_LIBZ;HAVE_ZLIB_H;BUILDING_LIBCURL;CURL_STATICLIB;USE_WOLFSSL;USE_IPV6;USE_LIBPSL;PSL_STATIC;CYASSL_IS_WOLFSSL;WOLFSSL_USER_SETTINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POSIX;__TRANSMISSION__;NATPMP_STATICLIB;MINIUPNP_STATICLIB;ENABLE_STRNATPMPERR;WITH_UTP;HAVE_LIBZ;HAVE_ZLIB_H;BUILDING_LIBCURL;CURL_STATICLIB;USE_WOLFSSL;USE_IPV6;USE_LIBPSL;PSL_STATIC;FORCE_BUILTIN_LIST;CYASSL_IS_WOLFSSL;WOLFSSL_USER_SETTINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
@@ -676,6 +676,7 @@
     <ClInclude Include="libdeflate\lib\lib_common.h" />
     <ClInclude Include="libdeflate\lib\matchfinder_common.h" />
     <ClInclude Include="libpsl\libpsl.h" />
+    <ClInclude Include="libpsl\suffixes_dafsa.h" />
     <ClInclude Include="libtransmission\announce-list.h" />
     <ClInclude Include="libtransmission\announcer-common.h" />
     <ClInclude Include="libtransmission\announcer.h" />

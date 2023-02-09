@@ -31,8 +31,9 @@
  */
 
 #ifdef __APPLE__
-#undef _ANSI_SOURCE
-#define _DARWIN_C_SOURCE /* for sysctlbyname() */
+#  undef _ANSI_SOURCE
+#  undef _DARWIN_C_SOURCE
+#  define _DARWIN_C_SOURCE /* for sysctlbyname() */
 #endif
 
 #include "../cpu_features_common.h" /* must be included first */
@@ -108,7 +109,7 @@ static u32 query_arm_cpu_features(void)
 
 	scan_auxv(&hwcap, &hwcap2);
 
-#ifdef __arm__
+#ifdef ARCH_ARM32
 	STATIC_ASSERT(sizeof(long) == 4);
 	if (hwcap & (1 << 12))	/* HWCAP_NEON */
 		features |= ARM_CPU_FEATURE_NEON;
@@ -126,6 +127,8 @@ static u32 query_arm_cpu_features(void)
 		features |= ARM_CPU_FEATURE_CRC32;
 	if (hwcap & (1 << 17))	/* HWCAP_SHA3 */
 		features |= ARM_CPU_FEATURE_SHA3;
+	if (hwcap & (1 << 20))	/* HWCAP_ASIMDDP */
+		features |= ARM_CPU_FEATURE_DOTPROD;
 #endif
 	return features;
 }
@@ -140,12 +143,13 @@ static const struct {
 	const char *name;
 	u32 feature;
 } feature_sysctls[] = {
-	{ "hw.optional.neon",		ARM_CPU_FEATURE_NEON },
-	{ "hw.optional.AdvSIMD",	ARM_CPU_FEATURE_NEON },
-	{ "hw.optional.arm.FEAT_PMULL",	ARM_CPU_FEATURE_PMULL },
-	{ "hw.optional.armv8_crc32",	ARM_CPU_FEATURE_CRC32 },
-	{ "hw.optional.armv8_2_sha3",	ARM_CPU_FEATURE_SHA3 },
-	{ "hw.optional.arm.FEAT_SHA3",	ARM_CPU_FEATURE_SHA3 },
+	{ "hw.optional.neon",		  ARM_CPU_FEATURE_NEON },
+	{ "hw.optional.AdvSIMD",	  ARM_CPU_FEATURE_NEON },
+	{ "hw.optional.arm.FEAT_PMULL",	  ARM_CPU_FEATURE_PMULL },
+	{ "hw.optional.armv8_crc32",	  ARM_CPU_FEATURE_CRC32 },
+	{ "hw.optional.armv8_2_sha3",	  ARM_CPU_FEATURE_SHA3 },
+	{ "hw.optional.arm.FEAT_SHA3",	  ARM_CPU_FEATURE_SHA3 },
+	{ "hw.optional.arm.FEAT_DotProd", ARM_CPU_FEATURE_DOTPROD },
 };
 
 static u32 query_arm_cpu_features(void)
@@ -164,6 +168,23 @@ static u32 query_arm_cpu_features(void)
 	}
 	return features;
 }
+#elif defined(_WIN32)
+
+#include <windows.h>
+
+static u32 query_arm_cpu_features(void)
+{
+	u32 features = ARM_CPU_FEATURE_NEON;
+
+	if (IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE))
+		features |= ARM_CPU_FEATURE_PMULL;
+	if (IsProcessorFeaturePresent(PF_ARM_V8_CRC32_INSTRUCTIONS_AVAILABLE))
+		features |= ARM_CPU_FEATURE_CRC32;
+
+	/* FIXME: detect SHA3 and DOTPROD support too. */
+
+	return features;
+}
 #else
 #error "unhandled case"
 #endif
@@ -173,6 +194,7 @@ static const struct cpu_feature arm_cpu_feature_table[] = {
 	{ARM_CPU_FEATURE_PMULL,		"pmull"},
 	{ARM_CPU_FEATURE_CRC32,		"crc32"},
 	{ARM_CPU_FEATURE_SHA3,		"sha3"},
+	{ARM_CPU_FEATURE_DOTPROD,	"dotprod"},
 };
 
 volatile u32 libdeflate_arm_cpu_features = 0;

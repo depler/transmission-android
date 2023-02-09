@@ -938,9 +938,6 @@
     <ClCompile Include="libtransmission\web-utils.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
-    <ClCompile Include="libtransmission\web.cc">
-      <Filter>libtransmission</Filter>
-    </ClCompile>
     <ClCompile Include="libtransmission\webseed.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
@@ -992,9 +989,6 @@
     <ClCompile Include="wolfssl_src\src\tls13.c">
       <Filter>wolfssl</Filter>
     </ClCompile>
-    <ClCompile Include="libtransmission\crypto-utils-wolfssl_mod.cc">
-      <Filter>libtransmission</Filter>
-    </ClCompile>
     <ClCompile Include="curl\lib\cfilters.c">
       <Filter>curl</Filter>
     </ClCompile>
@@ -1016,6 +1010,8 @@
     <ClCompile Include="libtransmission\utils-ev.cc">
       <Filter>libtransmission</Filter>
     </ClCompile>
+    <ClCompile Include="libtransmission\crypto-utils-wolfssl.cc" />
+    <ClCompile Include="libtransmission\web_mod.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="zlib">
@@ -2240,6 +2236,9 @@
     </ClInclude>
     <ClInclude Include="wildmat\wildmat.h">
       <Filter>wildmat</Filter>
+    </ClInclude>
+    <ClInclude Include="libpsl\suffixes_dafsa.h">
+      <Filter>libpsl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

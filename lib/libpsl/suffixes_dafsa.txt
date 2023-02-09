@@ -1,0 +1,5 @@
+https://publicsuffix.org/list/public_suffix_list.dat
+https://raw.githubusercontent.com/rockdaboot/libpsl/master/src/psl-make-dafsa
+
+apt install -y python3 python3-pip
+python3 psl-make-dafsa --output-format=cxx+ public_suffix_list.dat suffixes_dafsa.h
