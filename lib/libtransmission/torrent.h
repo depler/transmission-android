@@ -40,9 +40,7 @@ struct tr_session;
 struct tr_torrent;
 struct tr_torrent_announcer;
 
-/**
-***  Package-visible
-**/
+// --- Package-visible
 
 void tr_torrentFreeInSessionThread(tr_torrent* tor);
 
@@ -54,11 +52,9 @@ bool tr_ctorSaveContents(tr_ctor const* ctor, std::string_view filename, tr_erro
 
 tr_session* tr_ctorGetSession(tr_ctor const* ctor);
 
-bool tr_ctorGetIncompleteDir(tr_ctor const* ctor, char const** setmeIncompleteDir);
+bool tr_ctorGetIncompleteDir(tr_ctor const* ctor, char const** setme_incomplete_dir);
 
-/**
-***
-**/
+// ---
 
 void tr_torrentChangeMyPort(tr_torrent* tor);
 
@@ -122,9 +118,19 @@ public:
 
     /// SPEED LIMIT
 
+    [[nodiscard]] constexpr auto& bandwidth() noexcept
+    {
+        return bandwidth_;
+    }
+
+    [[nodiscard]] constexpr auto const& bandwidth() const noexcept
+    {
+        return bandwidth_;
+    }
+
     constexpr void setSpeedLimitBps(tr_direction dir, tr_bytes_per_second_t bytes_per_second)
     {
-        if (bandwidth_.setDesiredSpeedBytesPerSecond(dir, bytes_per_second))
+        if (bandwidth().setDesiredSpeedBytesPerSecond(dir, bytes_per_second))
         {
             setDirty();
         }
@@ -132,7 +138,7 @@ public:
 
     constexpr void useSpeedLimit(tr_direction dir, bool do_use)
     {
-        if (bandwidth_.setLimited(dir, do_use))
+        if (bandwidth().setLimited(dir, do_use))
         {
             setDirty();
         }
@@ -140,17 +146,17 @@ public:
 
     [[nodiscard]] constexpr auto speedLimitBps(tr_direction dir) const
     {
-        return bandwidth_.getDesiredSpeedBytesPerSecond(dir);
+        return bandwidth().getDesiredSpeedBytesPerSecond(dir);
     }
 
     [[nodiscard]] constexpr auto usesSessionLimits() const noexcept
     {
-        return bandwidth_.areParentLimitsHonored(TR_UP);
+        return bandwidth().areParentLimitsHonored(TR_UP);
     }
 
     [[nodiscard]] constexpr auto usesSpeedLimit(tr_direction dir) const noexcept
     {
-        return bandwidth_.isLimited(dir);
+        return bandwidth().isLimited(dir);
     }
 
     /// BLOCK INFO
@@ -338,9 +344,9 @@ public:
         return file_priorities_.piecePriority(piece);
     }
 
-    void setFilePriorities(tr_file_index_t const* files, tr_file_index_t fileCount, tr_priority_t priority)
+    void setFilePriorities(tr_file_index_t const* files, tr_file_index_t file_count, tr_priority_t priority)
     {
-        file_priorities_.set(files, fileCount, priority);
+        file_priorities_.set(files, file_count, priority);
         setDirty();
     }
 
@@ -421,6 +427,8 @@ public:
     }
 
     bool setTrackerList(std::string_view text);
+
+    void onTrackerResponse(tr_tracker_event const* event);
 
     /// METAINFO - WEBSEEDS
 
@@ -673,7 +681,7 @@ public:
 
     [[nodiscard]] constexpr auto getPriority() const noexcept
     {
-        return bandwidth_.getPriority();
+        return bandwidth().getPriority();
     }
 
     [[nodiscard]] constexpr auto const& bandwidthGroup() const noexcept
@@ -776,6 +784,13 @@ public:
         return announce_key_;
     }
 
+    // should be called when done modifying the torrent's announce list.
+    void on_announce_list_changed()
+    {
+        markEdited();
+        session->announcer_->resetTorrent(this);
+    }
+
     tr_torrent_metainfo metainfo_;
 
     tr_bandwidth bandwidth_;
@@ -811,7 +826,7 @@ public:
      * peer_id that was registered by the peer. The peer_id from the tracker
      * and in the handshake are expected to match.
      */
-    tr_peer_id_t peer_id_;
+    tr_peer_id_t peer_id_ = {};
 
     tr_session* session = nullptr;
 
@@ -889,6 +904,7 @@ public:
     bool isRunning = false;
     bool isStopping = false;
     bool startAfterVerify = false;
+    bool magnetStartAfterVerify = false;
 
     bool magnetVerify = false;
 
@@ -936,9 +952,7 @@ private:
     bool needs_completeness_check_ = true;
 };
 
-/***
-****
-***/
+// ---
 
 constexpr bool tr_isTorrent(tr_torrent const* tor)
 {
@@ -946,9 +960,9 @@ constexpr bool tr_isTorrent(tr_torrent const* tor)
 }
 
 /**
- * Tell the tr_torrent that it's gotten a block
+ * Tell the `tr_torrent` that it's gotten a block
  */
-void tr_torrentGotBlock(tr_torrent* tor, tr_block_index_t blockIndex);
+void tr_torrentGotBlock(tr_torrent* tor, tr_block_index_t block);
 
 tr_peer_id_t const& tr_torrentGetPeerId(tr_torrent* tor);
 

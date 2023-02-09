@@ -11,6 +11,7 @@
 
 #include <array>
 #include <cstdint> // uint8_t, uint32_t, uint64_t
+#include <string>
 
 #include "transmission.h"
 
@@ -30,9 +31,7 @@ class tr_swarm;
 struct peer_atom;
 struct tr_bandwidth;
 
-/**
-***  Peer Publish / Subscribe
-**/
+// --- Peer Publish / Subscribe
 
 class tr_peer_event
 {
@@ -211,6 +210,13 @@ public:
     // requests that have been made but haven't been fulfilled yet
     [[nodiscard]] virtual size_t activeReqCount(tr_direction) const noexcept = 0;
 
+    [[nodiscard]] tr_bytes_per_second_t get_piece_speed_bytes_per_second(uint64_t now, tr_direction direction) const
+    {
+        auto bytes_per_second = tr_bytes_per_second_t{};
+        isTransferringPieces(now, direction, &bytes_per_second);
+        return bytes_per_second;
+    }
+
     virtual void requestBlocks(tr_block_span_t const* block_spans, size_t n_spans) = 0;
 
     struct RequestLimit
@@ -235,7 +241,7 @@ public:
     tr_recentHistory<uint16_t> cancels_sent_to_client;
 
     /// The following fields are only to be used in peer-mgr.cc.
-    /// TODO(ckerr): refactor them out of tr_peer
+    /// TODO(ckerr): refactor them out of `tr_peer`
 
     // hook to private peer-mgr information
     peer_atom* const atom;
@@ -256,9 +262,7 @@ public:
     tr_recentHistory<uint16_t> cancels_sent_to_peer;
 };
 
-/***
-****
-***/
+// ---
 
 struct tr_swarm_stats
 {
@@ -272,9 +276,7 @@ tr_swarm_stats tr_swarmGetStats(tr_swarm const* swarm);
 
 void tr_swarmIncrementActivePeers(tr_swarm* swarm, tr_direction direction, bool is_active);
 
-/***
-****
-***/
+// ---
 
 #ifdef _WIN32
 #undef EMSGSIZE

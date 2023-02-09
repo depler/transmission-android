@@ -398,7 +398,7 @@ bool tr_variantParseJson(tr_variant& setme, int parse_opts, std::string_view jso
     return success;
 }
 
-///
+// ---
 
 namespace
 {
@@ -689,5 +689,5 @@ std::string tr_variantToStrJson(tr_variant const* top, bool lean)
     {
         buf.push_back('\n');
     }
-    return buf.toString();
+    return buf.to_string();
 }

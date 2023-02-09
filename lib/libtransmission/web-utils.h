@@ -45,6 +45,10 @@ struct tr_url_parsed_t
 // must be one we that Transmission supports for announce and scrape
 [[nodiscard]] std::optional<tr_url_parsed_t> tr_urlParseTracker(std::string_view url);
 
+// Convenience function to get a log-safe version of a tracker URL.
+// This is to avoid logging sensitive info, e.g. a personal announcer id in the URL.
+[[nodiscard]] std::string tr_urlTrackerLogName(std::string_view url);
+
 // example use: `for (auto const [key, val] : tr_url_query_view{ querystr })`
 struct tr_url_query_view
 {
@@ -58,7 +62,7 @@ struct tr_url_query_view
     struct iterator
     {
         std::pair<std::string_view, std::string_view> keyval = std::make_pair(std::string_view{ "" }, std::string_view{ "" });
-        std::string_view remain = std::string_view{ "" };
+        std::string_view remain = "";
 
         iterator& operator++();
 
@@ -94,13 +98,13 @@ struct tr_url_query_view
 template<typename BackInsertIter>
 constexpr void tr_urlPercentEncode(BackInsertIter out, std::string_view input, bool escape_reserved = true)
 {
-    auto constexpr is_unreserved = [](unsigned char ch)
+    auto constexpr IsUnreserved = [](unsigned char ch)
     {
         return ('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ch == '-' || ch == '_' ||
             ch == '.' || ch == '~';
     };
 
-    auto constexpr is_reserved = [](unsigned char ch)
+    auto constexpr IsReserved = [](unsigned char ch)
     {
         return ch == '!' || ch == '*' || ch == '(' || ch == ')' || ch == ';' || ch == ':' || ch == '@' || ch == '&' ||
             ch == '=' || ch == '+' || ch == '$' || ch == ',' || ch == '/' || ch == '?' || ch == '%' || ch == '#' || ch == '[' ||
@@ -109,7 +113,7 @@ constexpr void tr_urlPercentEncode(BackInsertIter out, std::string_view input, b
 
     for (unsigned char ch : input)
     {
-        if (is_unreserved(ch) || (!escape_reserved && is_reserved(ch)))
+        if (IsUnreserved(ch) || (!escape_reserved && IsReserved(ch)))
         {
             out = ch;
         }
@@ -128,4 +132,4 @@ constexpr void tr_urlPercentEncode(BackInsertIter out, tr_sha1_digest_t const& d
 
 [[nodiscard]] char const* tr_webGetResponseStr(long response_code);
 
-[[nodiscard]] std::string tr_urlPercentDecode(std::string_view);
+[[nodiscard]] std::string tr_urlPercentDecode(std::string_view /*url*/);

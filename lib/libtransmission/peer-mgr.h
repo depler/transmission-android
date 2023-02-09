@@ -58,7 +58,7 @@ struct tr_pex
     tr_pex() = default;
 
     tr_pex(tr_address addr_in, tr_port port_in, uint8_t flags_in = {})
-        : addr{ std::move(addr_in) }
+        : addr{ addr_in }
         , port{ port_in }
         , flags{ flags_in }
     {
@@ -215,11 +215,6 @@ void tr_peerMgrOnBlocklistChanged(tr_peerMgr* mgr);
 [[nodiscard]] struct tr_peer_stat* tr_peerMgrPeerStats(tr_torrent const* tor, size_t* setme_count);
 
 [[nodiscard]] tr_webseed_view tr_peerMgrWebseed(tr_torrent const* tor, size_t i);
-
-[[nodiscard]] tr_bytes_per_second_t tr_peerGetPieceSpeedBytesPerSecond(
-    tr_peer const* peer,
-    uint64_t now,
-    tr_direction direction);
 
 void tr_peerMgrClearInterest(tr_torrent* tor);
 

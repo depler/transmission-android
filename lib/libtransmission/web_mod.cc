@@ -41,10 +41,10 @@ using namespace std::literals;
 #define USE_LIBCURL_SOCKOPT
 #endif
 
-/***
-****
-***/
+// ---
 
+namespace
+{
 namespace curl_helpers
 {
 
@@ -94,6 +94,7 @@ struct EasyDeleter
 using easy_unique_ptr = std::unique_ptr<CURL, EasyDeleter>;
 
 } // namespace curl_helpers
+} // namespace
 
 #ifdef __ANDROID__
 #include <wolfssl/ssl.h>
@@ -160,9 +161,7 @@ static CURLcode ssl_context_func(CURL* /*curl*/, void* ssl_ctx, void* /*user_dat
 }
 #endif
 
-/***
-****
-***/
+// ---
 
 class tr_web::Impl
 {
@@ -441,6 +440,31 @@ public:
         auto* task = static_cast<Task*>(vtask);
         TR_ASSERT(std::this_thread::get_id() == task->impl.curl_thread->get_id());
 
+		if (auto const range = task->range(); range)
+        {
+            // https://curl.se/libcurl/c/CURLINFO_RESPONSE_CODE.html
+            // "The stored value will be zero if no server response code has been received"
+            static auto constexpr NoResponseCode = 0L;
+            static auto constexpr PartialContentResponseCode = 206L;
+
+            // Test for webservers that don't support partial-content, see GH #4595
+            auto code = long{};
+            (void)curl_easy_getinfo(task->easy(), CURLINFO_RESPONSE_CODE, &code);
+            if (code != NoResponseCode && code != PartialContentResponseCode)
+            {
+                tr_logAddWarn(fmt::format(
+                    _("Couldn't fetch '{url}': expected HTTP response code {expected_code}, got {actual_code}"),
+                    fmt::arg("url", task->url()),
+                    fmt::arg("expected_code", PartialContentResponseCode),
+                    fmt::arg("actual_code", code)));
+
+                // Tell curl to error out. Returning anything that's not
+                // `bytes_used` signals an error and causes the transfer
+                // to be aborted w/CURLE_WRITE_ERROR.
+                return bytes_used + 1;
+            }
+        }
+
         if (auto const& tag = task->speedLimitTag(); tag)
         {
             // If this is more bandwidth than is allocated for this tag,
@@ -491,7 +515,7 @@ public:
         (void)curl_easy_setopt(e, CURLOPT_SHARE, shared());
         (void)curl_easy_setopt(e, CURLOPT_DNS_CACHE_TIMEOUT, DnsCacheTimeoutSecs);
         (void)curl_easy_setopt(e, CURLOPT_AUTOREFERER, 1L);
-        (void)curl_easy_setopt(e, CURLOPT_ENCODING, "");
+        (void)curl_easy_setopt(e, CURLOPT_ACCEPT_ENCODING, "");
         (void)curl_easy_setopt(e, CURLOPT_FOLLOWLOCATION, 1L);
         (void)curl_easy_setopt(e, CURLOPT_MAXREDIRS, -1L);
         (void)curl_easy_setopt(e, CURLOPT_NOSIGNAL, 1L);
@@ -505,8 +529,10 @@ public:
 
         if (!curl_ssl_verify)
         {
+#if LIBCURL_VERSION_NUM >= 0x073400 /* 7.52.0 */
             (void)curl_easy_setopt(e, CURLOPT_SSL_VERIFYHOST, 0L);
             (void)curl_easy_setopt(e, CURLOPT_SSL_VERIFYPEER, 0L);
+#endif
         }
         else if (!std::empty(curl_ca_bundle))
         {
@@ -527,12 +553,16 @@ public:
         {
             (void)curl_easy_setopt(e, CURLOPT_CAINFO, NULL);
             (void)curl_easy_setopt(e, CURLOPT_CAPATH, NULL);
+#if LIBCURL_VERSION_NUM >= 0x073400 /* 7.52.0 */
             (void)curl_easy_setopt(e, CURLOPT_PROXY_SSL_VERIFYHOST, 0L);
             (void)curl_easy_setopt(e, CURLOPT_PROXY_SSL_VERIFYPEER, 0L);
+#endif
         }
         else if (!std::empty(curl_ca_bundle))
         {
+#if LIBCURL_VERSION_NUM >= 0x073400 /* 7.52.0 */
             (void)curl_easy_setopt(e, CURLOPT_PROXY_CAINFO, curl_ca_bundle.c_str());
+#endif
         }
 
         if (auto const& ua = user_agent; !std::empty(ua))
@@ -544,7 +574,7 @@ public:
         (void)curl_easy_setopt(e, CURLOPT_URL, task.url().c_str());
         (void)curl_easy_setopt(e, CURLOPT_VERBOSE, curl_verbose ? 1L : 0L);
         (void)curl_easy_setopt(e, CURLOPT_WRITEDATA, &task);
-        (void)curl_easy_setopt(e, CURLOPT_WRITEFUNCTION, onDataReceived);
+        (void)curl_easy_setopt(e, CURLOPT_WRITEFUNCTION, &tr_web::Impl::onDataReceived);
         (void)curl_easy_setopt(e, CURLOPT_MAXREDIRS, MaxRedirects);
 
         if (auto const addrstr = task.publicAddress(); addrstr)
@@ -565,7 +595,8 @@ public:
         if (auto const& range = task.range(); range)
         {
             /* don't bother asking the server to compress webseed fragments */
-            (void)curl_easy_setopt(e, CURLOPT_ENCODING, "identity");
+            (void)curl_easy_setopt(e, CURLOPT_ACCEPT_ENCODING, "identity");
+            (void)curl_easy_setopt(e, CURLOPT_HTTP_CONTENT_DECODING, 0L);
             (void)curl_easy_setopt(e, CURLOPT_RANGE, range->c_str());
         }
     }
@@ -685,7 +716,7 @@ public:
                 ++repeats;
                 if (repeats > 1U)
                 {
-                    tr_wait_msec(100);
+                    tr_wait(100ms);
                 }
             }
             else
@@ -758,7 +789,7 @@ public:
         }
     }
 
-    static std::once_flag curl_init_flag;
+    static inline auto curl_init_flag = std::once_flag{};
 
     std::multimap<uint64_t /*tr_time_msec()*/, CURL*> paused_easy_handles;
 
@@ -772,8 +803,6 @@ public:
         }
     }
 };
-
-std::once_flag tr_web::Impl::curl_init_flag;
 
 tr_web::tr_web(Mediator& mediator)
     : impl_{ std::make_unique<Impl>(mediator) }

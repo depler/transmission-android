@@ -50,13 +50,10 @@ extern std::string tr_web_folder;
 extern std::string tr_session_folder;
 #endif
 
-/***
-****  PATHS
-***/
-
+namespace
+{
 #ifdef _WIN32
-
-static std::string win32_get_known_folder_ex(REFKNOWNFOLDERID folder_id, DWORD flags)
+std::string win32_get_known_folder_ex(REFKNOWNFOLDERID folder_id, DWORD flags)
 {
     if (PWSTR path; SHGetKnownFolderPath(folder_id, flags | KF_FLAG_DONT_UNEXPAND, nullptr, &path) == S_OK)
     {
@@ -68,14 +65,13 @@ static std::string win32_get_known_folder_ex(REFKNOWNFOLDERID folder_id, DWORD f
     return {};
 }
 
-static auto win32_get_known_folder(REFKNOWNFOLDERID folder_id)
+auto win32_get_known_folder(REFKNOWNFOLDERID folder_id)
 {
     return win32_get_known_folder_ex(folder_id, KF_FLAG_DONT_VERIFY);
 }
-
 #endif
 
-static std::string getHomeDir()
+std::string getHomeDir()
 {
     if (auto dir = tr_env_get_string("HOME"sv); !std::empty(dir))
     {
@@ -105,7 +101,7 @@ static std::string getHomeDir()
     return {};
 }
 
-static std::string xdgConfigHome()
+std::string xdgConfigHome()
 {
     if (auto dir = tr_env_get_string("XDG_CONFIG_HOME"sv); !std::empty(dir))
     {
@@ -114,6 +110,51 @@ static std::string xdgConfigHome()
 
     return fmt::format("{:s}/.config"sv, getHomeDir());
 }
+
+std::string getXdgEntryFromUserDirs(std::string_view key)
+{
+    auto content = std::vector<char>{};
+    if (auto const filename = fmt::format("{:s}/{:s}"sv, xdgConfigHome(), "user-dirs.dirs"sv);
+        !tr_sys_path_exists(filename) || !tr_loadFile(filename, content) || std::empty(content))
+    {
+        return {};
+    }
+
+    // search for key="val" and extract val
+    auto const search = fmt::format(FMT_STRING("{:s}=\""), key);
+    auto begin = std::search(std::begin(content), std::end(content), std::begin(search), std::end(search));
+    if (begin == std::end(content))
+    {
+        return {};
+    }
+    std::advance(begin, std::size(search));
+    auto const end = std::find(begin, std::end(content), '"');
+    if (end == std::end(content))
+    {
+        return {};
+    }
+    auto val = std::string{ begin, end };
+
+    // if val contains "$HOME", replace that with getHomeDir()
+    auto constexpr Home = "$HOME"sv;
+    if (auto const it = std::search(std::begin(val), std::end(val), std::begin(Home), std::end(Home)); it != std::end(val))
+    {
+        val.replace(it, it + std::size(Home), getHomeDir());
+    }
+
+    return val;
+}
+
+[[nodiscard]] bool isWebClientDir(std::string_view path)
+{
+    auto const filename = tr_pathbuf{ path, '/', "index.html"sv };
+    bool const found = tr_sys_path_exists(filename);
+    tr_logAddTrace(fmt::format(FMT_STRING("Searching for web interface file '{:s}'"), filename));
+    return found;
+}
+} // namespace
+
+// ---
 
 std::string tr_getDefaultConfigDir(std::string_view appname)
 {
@@ -154,40 +195,6 @@ size_t tr_getDefaultConfigDirToBuf(char const* appname, char* buf, size_t buflen
     return tr_strvToBuf(tr_getDefaultConfigDir(appname != nullptr ? appname : ""), buf, buflen);
 }
 
-static std::string getXdgEntryFromUserDirs(std::string_view key)
-{
-    auto content = std::vector<char>{};
-    if (auto const filename = fmt::format("{:s}/{:s}"sv, xdgConfigHome(), "user-dirs.dirs"sv);
-        !tr_sys_path_exists(filename) || !tr_loadFile(filename, content) || std::empty(content))
-    {
-        return {};
-    }
-
-    // search for key="val" and extract val
-    auto const search = fmt::format(FMT_STRING("{:s}=\""), key);
-    auto begin = std::search(std::begin(content), std::end(content), std::begin(search), std::end(search));
-    if (begin == std::end(content))
-    {
-        return {};
-    }
-    std::advance(begin, std::size(search));
-    auto const end = std::find(begin, std::end(content), '"');
-    if (end == std::end(content))
-    {
-        return {};
-    }
-    auto val = std::string{ begin, end };
-
-    // if val contains "$HOME", replace that with getHomeDir()
-    auto constexpr Home = "$HOME"sv;
-    if (auto const it = std::search(std::begin(val), std::end(val), std::begin(Home), std::end(Home)); it != std::end(val))
-    {
-        val.replace(it, it + std::size(Home), getHomeDir());
-    }
-
-    return val;
-}
-
 std::string tr_getDefaultDownloadDir()
 {
     if (auto dir = getXdgEntryFromUserDirs("XDG_DOWNLOAD_DIR"sv); !std::empty(dir))
@@ -214,17 +221,7 @@ size_t tr_getDefaultDownloadDirToBuf(char* buf, size_t buflen)
     return tr_strvToBuf(tr_getDefaultDownloadDir(), buf, buflen);
 }
 
-/***
-****
-***/
-
-static bool isWebClientDir(std::string_view path)
-{
-    auto const filename = tr_pathbuf{ path, '/', "index.html"sv };
-    bool const found = tr_sys_path_exists(filename);
-    tr_logAddTrace(fmt::format(FMT_STRING("Searching for web interface file '{:s}'"), filename));
-    return found;
-}
+// ---
 
 std::string tr_getWebClientDir([[maybe_unused]] tr_session const* session)
 {

@@ -308,9 +308,7 @@ struct tr_address
     [[nodiscard]] bool is_valid_for_peers(tr_port port) const noexcept;
 };
 
-/***********************************************************************
- * Sockets
- **********************************************************************/
+// --- Sockets
 
 struct tr_session;
 
@@ -326,10 +324,10 @@ void tr_net_close_socket(tr_socket_t fd);
 
 bool tr_net_hasIPv6(tr_port);
 
-/// TOS / DSCP
+// --- TOS / DSCP
 
 /**
- * A toString() / from_string() convenience wrapper around the TOS int value
+ * A `toString()` / `from_string()` convenience wrapper around the TOS int value
  */
 class tr_tos_t
 {

@@ -53,12 +53,15 @@ std::string tr_torrent_metainfo::fixWebseedUrl(tr_torrent_metainfo const& tm, st
     return std::string{ url };
 }
 
-static auto constexpr MaxBencDepth = 32;
+namespace
+{
+auto constexpr MaxBencDepth = 32;
 
 bool tr_error_is_set(tr_error const* const* error)
 {
     return (error != nullptr) && (*error != nullptr);
 }
+} // namespace
 
 struct MetainfoHandler final : public transmission::benc::BasicHandler<MaxBencDepth>
 {
@@ -321,11 +324,11 @@ struct MetainfoHandler final : public transmission::benc::BasicHandler<MaxBencDe
         }
         else if (pathIs(CommentKey) || pathIs(CommentUtf8Key))
         {
-            tm_.comment_ = tr_strvUtf8Clean(value);
+            tm_.comment_ = tr_strv_replace_invalid(value);
         }
         else if (pathIs(CreatedByKey) || pathIs(CreatedByUtf8Key))
         {
-            tm_.creator_ = tr_strvUtf8Clean(value);
+            tm_.creator_ = tr_strv_replace_invalid(value);
         }
         else if (pathIs(SourceKey) || pathIs(InfoKey, SourceKey) || pathIs(PublisherKey) || pathIs(InfoKey, PublisherKey))
         {
@@ -333,7 +336,7 @@ struct MetainfoHandler final : public transmission::benc::BasicHandler<MaxBencDe
             // to have the same use as the 'source' key
             // http://wiki.bitcomet.com/inside_bitcomet
 
-            tm_.source_ = tr_strvUtf8Clean(value);
+            tm_.source_ = tr_strv_replace_invalid(value);
         }
         else if (pathIs(AnnounceKey))
         {
@@ -349,7 +352,7 @@ struct MetainfoHandler final : public transmission::benc::BasicHandler<MaxBencDe
         }
         else if (pathIs(InfoKey, NameKey) || pathIs(InfoKey, NameUtf8Key))
         {
-            tm_.name_ = tr_strvUtf8Clean(value);
+            tm_.name_ = tr_strv_replace_invalid(value);
         }
         else if (pathIs(InfoKey, PiecesKey))
         {
@@ -629,11 +632,6 @@ bool tr_torrent_metainfo::parseTorrentFile(std::string_view filename, std::vecto
     }
 
     return tr_loadFile(filename, *contents, error) && parseBenc({ std::data(*contents), std::size(*contents) }, error);
-}
-
-tr_sha1_digest_t const& tr_torrent_metainfo::pieceHash(tr_piece_index_t piece) const
-{
-    return this->pieces_[piece];
 }
 
 tr_pathbuf tr_torrent_metainfo::makeFilename(

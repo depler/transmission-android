@@ -16,6 +16,8 @@
 
 using namespace std::literals;
 
+namespace
+{
 namespace wi
 {
 using key_t = math::wide_integer::uintwide_t<
@@ -61,11 +63,12 @@ auto WIDE_INTEGER_CONSTEXPR const prime = wi::key_t{
 // NOLINTEND(readability-identifier-naming)
 
 } // namespace wi
+} // namespace
 
 namespace tr_message_stream_encryption
 {
 
-/// DH
+// --- DH
 
 [[nodiscard]] DH::private_key_bigend_t DH::randomPrivateKey() noexcept
 {
@@ -98,7 +101,7 @@ void DH::setPeerPublicKey(key_bigend_t const& peer_public_key)
     secret_ = wi::export_bits(secret);
 }
 
-/// Filter
+// --- Filter
 
 void Filter::decryptInit(bool is_incoming, DH const& dh, tr_sha1_digest_t const& info_hash)
 {

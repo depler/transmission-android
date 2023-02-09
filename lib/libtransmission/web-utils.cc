@@ -21,16 +21,16 @@
 
 #include "transmission.h"
 
+#include "log.h"
 #include "net.h"
+#include "tr-assert.h"
 #include "tr-strbuf.h"
 #include "utils.h"
 #include "web-utils.h"
 
 using namespace std::literals;
 
-/***
-****
-***/
+// ---
 
 bool tr_addressIsIP(char const* address)
 {
@@ -172,7 +172,7 @@ char const* tr_webGetResponseStr(long code)
     }
 }
 
-//// URLs
+// --- URLs
 
 namespace
 {
@@ -206,7 +206,7 @@ constexpr std::string_view getPortForScheme(std::string_view scheme)
     return "-1"sv;
 }
 
-bool urlCharsAreValid(std::string_view url)
+TR_CONSTEXPR20 bool urlCharsAreValid(std::string_view url)
 {
     // rfc2396
     auto constexpr ValidChars = std::string_view{
@@ -254,12 +254,20 @@ std::string_view getSiteName(std::string_view host)
         return host;
     }
 
+    TR_ASSERT(psl_builtin() != nullptr);
+    if (psl_builtin() == nullptr)
+    {
+        tr_logAddWarn("psl_builtin is null");
+        return host;
+    }
+
     // psl needs a zero-terminated hostname
     auto const szhost = tr_urlbuf{ host };
 
     // is it a registered name?
     if (isAsciiNonUpperCase(host))
     {
+        // www.example.co.uk -> example.co.uk
         if (char const* const top = psl_registrable_domain(psl_builtin(), std::data(szhost)); top != nullptr)
         {
             host.remove_prefix(top - std::data(szhost));
@@ -267,7 +275,7 @@ std::string_view getSiteName(std::string_view host)
     }
     else if (char* lower = nullptr; psl_str_to_utf8lower(std::data(szhost), nullptr, nullptr, &lower) == PSL_SUCCESS)
     {
-        // www.example.com -> example.com
+        // www.example.co.uk -> example.co.uk
         if (char const* const top = psl_registrable_domain(psl_builtin(), lower); top != nullptr)
         {
             host.remove_prefix(top - lower);
@@ -276,7 +284,7 @@ std::string_view getSiteName(std::string_view host)
         psl_free_string(lower);
     }
 
-    // example.com -> example
+    // example.co.uk -> example
     if (auto const dot_pos = host.find('.'); dot_pos != std::string_view::npos)
     {
         host = host.substr(0, dot_pos);
@@ -373,6 +381,17 @@ bool tr_urlIsValid(std::string_view url)
     auto constexpr Schemes = std::array<std::string_view, 5>{ "http"sv, "https"sv, "ftp"sv, "sftp"sv, "udp"sv };
     auto const parsed = tr_urlParse(url);
     return parsed && std::find(std::begin(Schemes), std::end(Schemes), parsed->scheme) != std::end(Schemes);
+}
+
+std::string tr_urlTrackerLogName(std::string_view url)
+{
+    if (auto const parsed = tr_urlParse(url); parsed)
+    {
+        return fmt::format(FMT_STRING("{:s}://{:s}:{:d}"), parsed->scheme, parsed->host, parsed->port);
+    }
+
+    // we have an invalid URL, we log the full string
+    return std::string{ url };
 }
 
 tr_url_query_view::iterator& tr_url_query_view::iterator::operator++()
