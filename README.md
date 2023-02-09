@@ -15,7 +15,7 @@ Clone current repository and build **TransmissionAndroid.sln** file with Visual 
 - root is not required
 
 # Config
-Application uses path `[external_storage]/Transmission` as root folder. Permission `MANAGE_EXTERNAL_STORAGE` is mandatory to use this folder, you need to grant access manually in your device settings. Root folder contains subfolders `Config` (application settings and service data) and `Web` (web UI files). Some settings will be calculated in rutime at first launch. 
+Application uses path `[external_storage]/Transmission` as root folder. Permission `MANAGE_EXTERNAL_STORAGE` is mandatory to use this folder, you need to grant access manually in your device settings. Root folder contains subfolders `Config` (application settings and service data) and `Web` (web UI files). Some settings will be calculated at runtime during first launch. 
 
 Probably you want/should change following settings in file `[external_storage]/Transmission/Config/settings.json`: `download-dir`, `incomplete-dir`. Default folder for torrents is `[external_storage]/Transmission/Torrents`. 
 
