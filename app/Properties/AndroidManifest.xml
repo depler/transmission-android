@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="4.00 beta" package="com.depler.transmission" android:installLocation="auto" android:versionCode="4">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="4.00" package="com.depler.transmission" android:installLocation="auto" android:versionCode="4">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
 	<application android:allowBackup="true" android:icon="@mipmap/ic_transmission" android:label="@string/app_name" android:supportsRtl="true"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

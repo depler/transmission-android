@@ -25,7 +25,11 @@ namespace TransmissionAndroid.Code
             var actionIntent = new Intent(context, typeof(NotificationActionReceiver));
             actionIntent.PutExtra(ContextAction.Id, id ?? text);
 
-            var pIntent = PendingIntent.GetBroadcast(context, ActionCounter++, actionIntent, PendingIntentFlags.CancelCurrent);
+            var flags = (Build.VERSION.SdkInt >= BuildVersionCodes.S) ?
+                PendingIntentFlags.CancelCurrent | PendingIntentFlags.Immutable :
+                PendingIntentFlags.CancelCurrent;
+
+            var pIntent = PendingIntent.GetBroadcast(context, ActionCounter++, actionIntent, flags);
             var spanText = GetSpan(text, color);
 
             return new NotificationCompat.Action(-1, spanText, pIntent);
