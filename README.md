@@ -19,10 +19,15 @@ Application uses path `[external_storage]/Transmission` as root folder. Permissi
 
 Probably you want/should change following settings in file `[external_storage]/Transmission/Config/settings.json`: `download-dir`, `incomplete-dir`. Default folder for torrents is `[external_storage]/Transmission/Torrents`. 
 
-# UI client
-Transmission is a background service, it has no build-in interface. You need some third-party client for transmission server, for example this one: https://play.google.com/store/apps/details?id=com.sleroy.transmissionic. Just install it and connect to localhost on port 9091.
-
 Also, be aware: **default settings allow any remote user connect to your transmission server without password**. If you plan to use it over public network - then you you need to tweak `settings.json` file to restrict access. See transmission documentation about how to do this.
+
+# UI client
+Transmission is a background service, it has no build-in interface. If you see the following screen - then transmission is running just fine.
+
+You need some third-party client for transmission server, for example this one: https://play.google.com/store/apps/details?id=com.sleroy.transmissionic. Just install it and connect to localhost on port 9091. 
+
+![image](https://user-images.githubusercontent.com/13541699/218250684-718abf37-fba2-4921-88d9-92457d6fb993.png)
+
 
 # Web UI
 Web UI files are not included in package. You can put your own files into `[app_folder]/Web` folder (for example https://github.com/6c65726f79/Transmissionic). Then open http://localhost:9091 and you should see UI:
