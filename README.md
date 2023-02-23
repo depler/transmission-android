@@ -6,7 +6,7 @@ This project is based on Windows version: https://github.com/depler/transmission
 Clone current repository and build **TransmissionAndroid.sln** file with Visual Studio 2022 or newer. No, additional black magic is not required. Yes, just that simple. All components, such as third-party modules and SSL library, are included as raw source code files.
 
 # Features
-- latest Transmission source code (currently v4.00)
+- latest Transmission source code (currently v4.0.x)
 - full control over transmission start arguments
 - full control over `settings.json` file and other data
 - ability to use custom Web UI
