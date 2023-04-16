@@ -1,4 +1,4 @@
-<a href="https://apt.izzysoft.de/fdroid/api/v1/shield/com.depler.transmission">
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.depler.transmission">
 <img src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.depler.transmission" />
 </a>
 
