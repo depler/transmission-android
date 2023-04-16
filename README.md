@@ -1,3 +1,7 @@
+<a href="https://apt.izzysoft.de/fdroid/api/v1/shield/com.depler.transmission">
+<img src="https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.depler.transmission" />
+</a>
+
 # Transmission daemon for Android
 
 This project is based on Windows version: https://github.com/depler/transmission-vs. Some code components may slightly differ.
